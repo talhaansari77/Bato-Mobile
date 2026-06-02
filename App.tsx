@@ -1,20 +1,33 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import './src/core/i18n/i18n';
 
-export default function App() {
+import React from 'react';
+import { NavigationContainer } from '@react-navigation/native';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { StatusBar } from 'expo-status-bar';
+
+import { LanguageProvider } from './src/app/providers/LanguageProvider';
+import { ThemeProvider, useAppTheme } from './src/app/providers/ThemeProvider';
+import { RootNavigator } from './src/core/navigation/RootNavigator';
+
+function AppContent() {
+  const theme = useAppTheme();
+
   return (
-    <View style={styles.container}>
-      <Text>Open up App.tsx to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
+    <LanguageProvider>
+      <NavigationContainer>
+        <StatusBar style={theme.resolvedMode === 'dark' ? 'light' : 'dark'} />
+        <RootNavigator />
+      </NavigationContainer>
+    </LanguageProvider>
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
+export default function App() {
+  return (
+    <SafeAreaProvider>
+      <ThemeProvider>
+        <AppContent />
+      </ThemeProvider>
+    </SafeAreaProvider>
+  );
+}

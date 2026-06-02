@@ -1,0 +1,80 @@
+// src/core/navigation/AdminNavigator.tsx
+
+import React from 'react';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+
+import { AdminTabParamList } from './navigation.types';
+import { useAppTheme } from '../../app/providers/ThemeProvider';
+import { AppIcon, AppIconName } from '../../shared/ui/atoms/AppIcon';
+
+import { AdminDashboardScreen } from '../../modules/admin/screens/AdminDashboardScreen';
+import { AdminAppointmentsScreen } from '../../modules/admin/screens/AdminAppointmentsScreen';
+import { AdminPatientsScreen } from '../../modules/admin/screens/AdminPatientsScreen';
+import { AdminDoctorsScreen } from '../../modules/admin/screens/AdminDoctorsScreen';
+import { AdminMoreScreen } from '../../modules/admin/screens/AdminMoreScreen';
+
+const Tab = createBottomTabNavigator<AdminTabParamList>();
+
+const icons: Record<keyof AdminTabParamList, AppIconName> = {
+  AdminDashboard: 'LayoutDashboard',
+  AdminAppointments: 'CalendarClock',
+  AdminPatients: 'UsersRound',
+  AdminDoctors: 'Stethoscope',
+  AdminMore: 'Menu',
+};
+
+export function AdminNavigator() {
+  const theme = useAppTheme();
+  const insets = useSafeAreaInsets();
+
+  return (
+    <Tab.Navigator
+      screenOptions={({ route }) => ({
+        headerShown: false,
+        tabBarActiveTintColor: theme.colors.primaryDark,
+        tabBarInactiveTintColor: theme.colors.textMuted,
+        tabBarStyle: {
+          height: 64 + insets.bottom,
+          paddingTop: 8,
+          paddingBottom: insets.bottom + 8,
+          backgroundColor: theme.colors.card,
+          borderTopColor: theme.colors.border,
+        },
+        tabBarLabelStyle: {
+          fontSize: 11,
+          fontWeight: '600',
+        },
+        tabBarIcon: ({ color, size }) => (
+          <AppIcon name={icons[route.name]} color={color} size={size} />
+        ),
+      })}
+    >
+      <Tab.Screen
+        name="AdminDashboard"
+        component={AdminDashboardScreen}
+        options={{ title: 'Dashboard' }}
+      />
+      <Tab.Screen
+        name="AdminAppointments"
+        component={AdminAppointmentsScreen}
+        options={{ title: 'Appointments' }}
+      />
+      <Tab.Screen
+        name="AdminPatients"
+        component={AdminPatientsScreen}
+        options={{ title: 'Patients' }}
+      />
+      <Tab.Screen
+        name="AdminDoctors"
+        component={AdminDoctorsScreen}
+        options={{ title: 'Doctors' }}
+      />
+      <Tab.Screen
+        name="AdminMore"
+        component={AdminMoreScreen}
+        options={{ title: 'More' }}
+      />
+    </Tab.Navigator>
+  );
+}
