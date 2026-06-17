@@ -1,21 +1,48 @@
-import React from 'react';
-import { Pressable, View } from 'react-native';
-import { NativeStackScreenProps } from '@react-navigation/native-stack';
+import React, { useState } from "react";
+import { Alert, Pressable, View } from "react-native";
+import { NativeStackScreenProps } from "@react-navigation/native-stack";
 
-import { AuthStackParamList } from '../../../core/navigation/navigation.types';
-import { Screen } from '../../../shared/ui/templates/Screen';
-import { AppText } from '../../../shared/ui/atoms/AppText';
-import { AppButton } from '../../../shared/ui/atoms/AppButton';
-import { AppInput } from '../../../shared/ui/atoms/AppInput';
-import { AuthCard } from '../../../shared/ui/molecules/AuthCard';
-import { AuthDivider } from '../../../shared/ui/molecules/AuthDivider';
-import { useAppTheme } from '../../../app/providers/ThemeProvider';
+import { AuthStackParamList } from "../../../core/navigation/navigation.types";
+import { Screen } from "../../../shared/ui/templates/Screen";
+import { AppText } from "../../../shared/ui/atoms/AppText";
+import { AppButton } from "../../../shared/ui/atoms/AppButton";
+import { AppInput } from "../../../shared/ui/atoms/AppInput";
+import { AuthCard } from "../../../shared/ui/molecules/AuthCard";
+import { AuthDivider } from "../../../shared/ui/molecules/AuthDivider";
+import { useAppTheme } from "../../../app/providers/ThemeProvider";
+import { useAuthStore } from "../../../store/auth.store";
 
-type Props = NativeStackScreenProps<AuthStackParamList, 'Login'>;
+type Props = NativeStackScreenProps<AuthStackParamList, "Login">;
 
 export function LoginScreen({ navigation }: Props) {
   const theme = useAppTheme();
   const [secure, setSecure] = React.useState(true);
+
+  const login = useAuthStore((state) => state.login);
+  const isLoading = useAuthStore((state) => state.isLoading);
+  const error = useAuthStore((state) => state.error);
+  const clearError = useAuthStore((state) => state.clearError);
+
+  const [email, setEmail] = useState("patient@batoclinic.com");
+  const [password, setPassword] = useState("Password123!");
+
+  const handleLogin = async () => {
+    try {
+      clearError();
+
+      if (!email.trim() || !password.trim()) {
+        Alert.alert("Missing fields", "Please enter email and password.");
+        return;
+      }
+
+      await login({
+        email: email.trim().toLowerCase(),
+        password,
+      }).then(()=>navigation.navigate('RoleSelection'));
+    } catch {
+      Alert.alert("Login failed", "Please check your email and password.");
+    }
+  };
 
   return (
     <Screen
@@ -26,7 +53,8 @@ export function LoginScreen({ navigation }: Props) {
       footer={
         <AppButton
           title="Login"
-          onPress={() => navigation.navigate('RoleSelection')}
+          onPress={handleLogin}
+          // onPress={() => navigation.navigate('RoleSelection')}
         />
       }
     >
@@ -41,6 +69,7 @@ export function LoginScreen({ navigation }: Props) {
             autoCapitalize="none"
             keyboardType="email-address"
             leftIcon="Mail"
+            onChangeText={setEmail}
           />
 
           <AppInput
@@ -48,13 +77,14 @@ export function LoginScreen({ navigation }: Props) {
             placeholder="Enter your password"
             secureTextEntry={secure}
             leftIcon="LockKeyhole"
-            rightIcon={secure ? 'Eye' : 'EyeOff'}
+            rightIcon={secure ? "Eye" : "EyeOff"}
             onRightIconPress={() => setSecure((value) => !value)}
+            onChangeText={setPassword}
           />
         </View>
 
         <Pressable
-          onPress={() => navigation.navigate('ForgotPassword')}
+          onPress={() => navigation.navigate("ForgotPassword")}
           style={{ marginTop: theme.spacing.md }}
         >
           <AppText
@@ -71,7 +101,7 @@ export function LoginScreen({ navigation }: Props) {
         <AppButton
           title="Continue with Phone OTP"
           variant="outline"
-          onPress={() => navigation.navigate('OtpVerification')}
+          onPress={() => navigation.navigate("OtpVerification")}
         />
       </AuthCard>
     </Screen>

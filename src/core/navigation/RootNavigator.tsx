@@ -1,28 +1,35 @@
 // src/core/navigation/RootNavigator.tsx
 
-import React from 'react';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
 
-import { RootStackParamList } from './navigation.types';
-import { AuthNavigator } from './AuthNavigator';
-import { PatientNavigator } from './PatientNavigator';
-import { DoctorNavigator } from './DoctorNavigator';
-import { AdminNavigator } from './AdminNavigator';
+import { AdminNavigator } from "./AdminNavigator";
+import { AuthNavigator } from "./AuthNavigator";
+import { DoctorNavigator } from "./DoctorNavigator";
+import { PatientNavigator } from "./PatientNavigator";
+import { RootStackParamList } from "./navigation.types";
+import { useAuthStore } from "../../store/auth.store";
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
 export function RootNavigator() {
+  const status = useAuthStore((state) => state.status);
+  const user = useAuthStore((state) => state.user);
+
+  if (status === "checking") {
+    return null; // later we can show splash/loading screen
+  }
+
   return (
-    <Stack.Navigator
-      initialRouteName="Auth"
-      screenOptions={{
-        headerShown: false,
-      }}
-    >
-      <Stack.Screen name="Auth" component={AuthNavigator} />
-      <Stack.Screen name="PatientApp" component={PatientNavigator} />
-      <Stack.Screen name="DoctorApp" component={DoctorNavigator} />
-      <Stack.Screen name="AdminApp" component={AdminNavigator} />
+    <Stack.Navigator screenOptions={{ headerShown: false }}>
+      {status === "authenticated" && user?.role === "Patient" ? (
+        <Stack.Screen name="PatientApp" component={PatientNavigator} />
+      ) : status === "authenticated" && user?.role === "Doctor" ? (
+        <Stack.Screen name="DoctorApp" component={DoctorNavigator} />
+      ) : status === "authenticated" && user?.role === "Admin" ? (
+        <Stack.Screen name="AdminApp" component={AdminNavigator} />
+      ) : (
+        <Stack.Screen name="Auth" component={AuthNavigator} />
+      )}
     </Stack.Navigator>
   );
 }

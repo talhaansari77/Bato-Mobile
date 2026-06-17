@@ -16,6 +16,7 @@ export function SplashScreen({ navigation }: Props) {
   return (
     <Screen
       scroll={false}
+      contentStyle={{flex:1}}
       footer={
         <AppButton
           title="Continue"
