@@ -16,6 +16,8 @@ export const lightColors = {
   errorText: '#8A1F1F',
   info: '#DDE4EA',
   infoText: '#28465E',
+  surface: '#7fb3d7',
+  danger: '#ff0000',
   overlay: 'rgba(43, 43, 43, 0.35)',
 };
 
@@ -37,6 +39,8 @@ export const darkColors = {
   errorText: '#E6A3A3',
   info: '#1F2D36',
   infoText: '#AFC7D8',
+  surface: '#7fb3d7',
+  danger: '#ff0000',
   overlay: 'rgba(0, 0, 0, 0.55)',
 };
 
