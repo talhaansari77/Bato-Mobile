@@ -1,7 +1,10 @@
 import React, { useMemo } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { useNavigation } from '@react-navigation/native';
 
 import { useAppTheme } from '../../../app/providers/ThemeProvider';
+import { AdminStackParamList } from '../../../core/navigation/navigation.types';
 import { AppButton } from '../../../shared/ui/atoms/AppButton';
 import { AppIcon, AppIconName } from '../../../shared/ui/atoms/AppIcon';
 import { AppText } from '../../../shared/ui/atoms/AppText';
@@ -10,11 +13,14 @@ import { ThemeModeSelector } from '../../../shared/ui/molecules/ThemeModeSelecto
 import { Screen } from '../../../shared/ui/templates/Screen';
 import { useAuthStore } from '../../../store/auth.store';
 
+type AdminMoreNavigation = NativeStackNavigationProp<AdminStackParamList>;
+
 type AdminTool = {
   id: string;
   title: string;
   subtitle: string;
   icon: AppIconName;
+  route: keyof AdminStackParamList;
   badge?: string;
 };
 
@@ -23,6 +29,7 @@ type SettingRow = {
   title: string;
   subtitle: string;
   icon: AppIconName;
+  route: keyof AdminStackParamList;
 };
 
 const adminTools: AdminTool[] = [
@@ -31,18 +38,21 @@ const adminTools: AdminTool[] = [
     title: 'Services',
     subtitle: 'Manage hair, skin, and face treatments',
     icon: 'Sparkles',
+    route: 'AdminServices',
   },
   {
     id: 'reports',
     title: 'Reports',
     subtitle: 'Clinic performance and appointment reports',
     icon: 'ChartNoAxesColumnIncreasing',
+    route: 'AdminReports',
   },
   {
     id: 'payments',
     title: 'Payments',
     subtitle: 'Transactions, refunds, and payment history',
     icon: 'CreditCard',
+    route: 'AdminPayments',
     badge: '12',
   },
   {
@@ -50,18 +60,21 @@ const adminTools: AdminTool[] = [
     title: 'Promotions',
     subtitle: 'Offers, banners, coupons, and campaigns',
     icon: 'BadgePercent',
+    route: 'AdminPromotions',
   },
   {
     id: 'branches',
     title: 'Branches',
     subtitle: 'Manage clinic locations and branch details',
     icon: 'MapPinned',
+    route: 'AdminBranches',
   },
   {
     id: 'notifications',
     title: 'Notifications',
     subtitle: 'Push messages, reminders, and announcements',
     icon: 'BellRing',
+    route: 'AdminNotifications',
     badge: '5',
   },
 ];
@@ -72,23 +85,27 @@ const settingsRows: SettingRow[] = [
     title: 'Clinic Settings',
     subtitle: 'Business profile, working hours, and policies',
     icon: 'Settings',
+    route: 'AdminSettings',
   },
   {
     id: 'staff',
     title: 'Staff Permissions',
     subtitle: 'Admin, doctor, and nurse access controls',
     icon: 'ShieldCheck',
+    route: 'AdminStaffPermissions',
   },
   {
     id: 'security',
     title: 'Security & Audit Logs',
     subtitle: 'Login activity and sensitive action history',
     icon: 'LockKeyhole',
+    route: 'AdminAuditLogs',
   },
 ];
 
 export function AdminMoreScreen() {
   const theme = useAppTheme();
+  const navigation = useNavigation<AdminMoreNavigation>();
   const styles = useMemo(() => createStyles(theme), [theme]);
 
   const logout = useAuthStore((state) => state.logout);
@@ -101,7 +118,7 @@ export function AdminMoreScreen() {
       actions={[
         {
           icon: 'Bell',
-          onPress: () => {},
+          onPress: () => navigation.navigate('AdminNotifications'),
         },
       ]}
     >
@@ -158,6 +175,7 @@ export function AdminMoreScreen() {
             {adminTools.map((tool) => (
               <Pressable
                 key={tool.id}
+                onPress={() => navigation.navigate(tool.route)}
                 style={({ pressed }) => [
                   styles.toolCard,
                   pressed && styles.pressed,
@@ -218,6 +236,7 @@ export function AdminMoreScreen() {
                 key={row.id}
                 row={row}
                 showDivider={index !== settingsRows.length - 1}
+                onPress={() => navigation.navigate(row.route)}
               />
             ))}
           </View>
@@ -306,9 +325,11 @@ function OverviewItem({
 function SettingActionRow({
   row,
   showDivider,
+  onPress,
 }: {
   row: SettingRow;
   showDivider: boolean;
+  onPress: () => void;
 }) {
   const theme = useAppTheme();
   const styles = useMemo(() => createStyles(theme), [theme]);
@@ -316,6 +337,7 @@ function SettingActionRow({
   return (
     <View>
       <Pressable
+        onPress={onPress}
         style={({ pressed }) => [styles.settingRow, pressed && styles.pressed]}
       >
         <View style={styles.rowIcon}>
