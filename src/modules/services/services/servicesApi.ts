@@ -1,4 +1,4 @@
-import { apiClient } from '../../../core/api/apiClient';
+import { apiClient } from "../../../core/api/apiClient";
 
 export type ClinicService = {
   id: string;
@@ -15,7 +15,12 @@ export type ClinicService = {
 
 export const servicesApi = {
   async getServices() {
-    const response = await apiClient.get<ClinicService[]>('/services');
+    const response = await apiClient.get<ClinicService[]>("/services");
+    return response.data;
+  },
+
+  async getServiceById(serviceId: string) {
+    const response = await apiClient.get<ClinicService>(`/services/${serviceId}`);
     return response.data;
   },
 };

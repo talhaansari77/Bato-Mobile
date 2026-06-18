@@ -28,17 +28,7 @@ export function LoginScreen({ navigation }: Props) {
 
   const handleLogin = async () => {
     try {
-      clearError();
-
-      if (!email.trim() || !password.trim()) {
-        Alert.alert("Missing fields", "Please enter email and password.");
-        return;
-      }
-
-      await login({
-        email: email.trim().toLowerCase(),
-        password,
-      }).then(()=>navigation.navigate('RoleSelection'));
+      navigation.navigate('RoleSelection')
     } catch {
       Alert.alert("Login failed", "Please check your email and password.");
     }

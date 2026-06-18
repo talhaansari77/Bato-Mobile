@@ -21,15 +21,15 @@ export function RootNavigator() {
 
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
-      {status === "authenticated" && user?.role === "Patient" ? (
-        <Stack.Screen name="PatientApp" component={PatientNavigator} />
+      {/* {status === "authenticated" && user?.role === "Patient" ? (
       ) : status === "authenticated" && user?.role === "Doctor" ? (
-        <Stack.Screen name="DoctorApp" component={DoctorNavigator} />
       ) : status === "authenticated" && user?.role === "Admin" ? (
+      ) : ( */}
+        <Stack.Screen name="PatientApp" component={PatientNavigator} />
+        <Stack.Screen name="DoctorApp" component={DoctorNavigator} />
         <Stack.Screen name="AdminApp" component={AdminNavigator} />
-      ) : (
         <Stack.Screen name="Auth" component={AuthNavigator} />
-      )}
+      {/* )} */}
     </Stack.Navigator>
   );
 }

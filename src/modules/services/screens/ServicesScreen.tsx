@@ -1,4 +1,4 @@
-import React from "react";
+import React from 'react';
 import {
   ActivityIndicator,
   FlatList,
@@ -6,13 +6,13 @@ import {
   RefreshControl,
   Text,
   View,
-} from "react-native";
+} from 'react-native';
 
-import { useAppTheme } from "../../../app/providers/ThemeProvider";
-import { Screen } from "../../../shared/ui/templates/Screen";
-import { AppIcon } from "../../../shared/ui/atoms/AppIcon";
-import { useServicesStore } from "../store/services.store";
-import { ClinicService } from "../services/servicesApi";
+import { useAppTheme } from '../../../app/providers/ThemeProvider';
+import { Screen } from '../../../shared/ui/templates/Screen';
+import { AppIcon } from '../../../shared/ui/atoms/AppIcon';
+import { useServicesStore } from '../store/services.store';
+import { ClinicService } from '../services/servicesApi';
 
 export function ServicesScreen() {
   const theme = useAppTheme();
@@ -38,15 +38,15 @@ export function ServicesScreen() {
           borderColor: theme.colors.border,
         }}
       >
-        <View style={{ flexDirection: "row", gap: theme.spacing.md }}>
+        <View style={{ flexDirection: 'row', gap: theme.spacing.md }}>
           <View
             style={{
               width: 48,
               height: 48,
               borderRadius: theme.radius.md,
               backgroundColor: theme.colors.surface,
-              alignItems: "center",
-              justifyContent: "center",
+              alignItems: 'center',
+              justifyContent: 'center',
             }}
           >
             <AppIcon name="Sparkles" size={24} color={theme.colors.primary} />
@@ -57,7 +57,7 @@ export function ServicesScreen() {
               style={{
                 color: theme.colors.text,
                 fontSize: 16,
-                fontWeight: "700",
+                fontWeight: '700',
                 marginBottom: 4,
               }}
             >
@@ -77,32 +77,20 @@ export function ServicesScreen() {
 
             <View
               style={{
-                flexDirection: "row",
-                alignItems: "center",
+                flexDirection: 'row',
+                alignItems: 'center',
                 gap: theme.spacing.md,
               }}
             >
-              <View
-                style={{ flexDirection: "row", alignItems: "center", gap: 4 }}
-              >
-                <AppIcon
-                  name="Clock3"
-                  size={14}
-                  color={theme.colors.textMuted}
-                />
+              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
+                <AppIcon name="Clock3" size={14} color={theme.colors.textMuted} />
                 <Text style={{ color: theme.colors.textMuted, fontSize: 12 }}>
                   {item.durationMinutes} min
                 </Text>
               </View>
 
-              <View
-                style={{ flexDirection: "row", alignItems: "center", gap: 4 }}
-              >
-                <AppIcon
-                  name="BadgeDollarSign"
-                  size={14}
-                  color={theme.colors.textMuted}
-                />
+              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
+                <AppIcon name="BadgeDollarSign" size={14} color={theme.colors.textMuted} />
                 <Text style={{ color: theme.colors.textMuted, fontSize: 12 }}>
                   {item.price} KWD
                 </Text>
@@ -110,18 +98,18 @@ export function ServicesScreen() {
             </View>
           </View>
 
-          <AppIcon
-            name="ChevronRight"
-            size={20}
-            color={theme.colors.textMuted}
-          />
+          <AppIcon name="ChevronRight" size={20} color={theme.colors.textMuted} />
         </View>
       </Pressable>
     );
   };
 
   return (
-    <Screen title="Services" scroll={false} subtitle="Choose a treatment to start booking">
+    <Screen
+      title="Services"
+      subtitle="Choose a treatment to start booking"
+      scroll={false}
+    >
       {isLoading && services.length === 0 ? (
         <View style={{ paddingVertical: theme.spacing.xl }}>
           <ActivityIndicator />
@@ -129,9 +117,7 @@ export function ServicesScreen() {
       ) : null}
 
       {error ? (
-        <Text
-          style={{ color: theme.colors.danger, marginBottom: theme.spacing.md }}
-        >
+        <Text style={{ color: theme.colors.danger, marginBottom: theme.spacing.md }}>
           {error}
         </Text>
       ) : null}
@@ -154,18 +140,14 @@ export function ServicesScreen() {
                 padding: theme.spacing.lg,
                 borderRadius: theme.radius.lg,
                 backgroundColor: theme.colors.card,
-                alignItems: "center",
+                alignItems: 'center',
               }}
             >
-              <AppIcon
-                name="SearchX"
-                size={32}
-                color={theme.colors.textMuted}
-              />
+              <AppIcon name="SearchX" size={32} color={theme.colors.textMuted} />
               <Text
                 style={{
                   color: theme.colors.text,
-                  fontWeight: "700",
+                  fontWeight: '700',
                   marginTop: theme.spacing.sm,
                 }}
               >
@@ -174,7 +156,7 @@ export function ServicesScreen() {
               <Text
                 style={{
                   color: theme.colors.textMuted,
-                  textAlign: "center",
+                  textAlign: 'center',
                   marginTop: 4,
                 }}
               >
