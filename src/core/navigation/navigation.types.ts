@@ -43,3 +43,16 @@ export type RootStackParamList = {
   DoctorApp: undefined;
   AdminApp: undefined;
 };
+
+export type AdminStackParamList = {
+  AdminTabs: undefined;
+  AdminServices: undefined;
+  AdminReports: undefined;
+  AdminPayments: undefined;
+  AdminPromotions: undefined;
+  AdminBranches: undefined;
+  AdminSettings: undefined;
+  AdminStaffPermissions: undefined;
+  AdminNotifications: undefined;
+  AdminAuditLogs: undefined;
+};

@@ -1,10 +1,12 @@
-// src/core/navigation/AdminNavigator.tsx
-
 import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { AdminTabParamList } from './navigation.types';
+import {
+  AdminStackParamList,
+  AdminTabParamList,
+} from './navigation.types';
 import { useAppTheme } from '../../app/providers/ThemeProvider';
 import { AppIcon, AppIconName } from '../../shared/ui/atoms/AppIcon';
 
@@ -13,7 +15,9 @@ import { AdminAppointmentsScreen } from '../../modules/admin/screens/AdminAppoin
 import { AdminPatientsScreen } from '../../modules/admin/screens/AdminPatientsScreen';
 import { AdminDoctorsScreen } from '../../modules/admin/screens/AdminDoctorsScreen';
 import { AdminMoreScreen } from '../../modules/admin/screens/AdminMoreScreen';
+import { AdminServicesScreen } from '../../modules/admin/screens/AdminMoreScreen/AdminServicesScreen';
 
+const Stack = createNativeStackNavigator<AdminStackParamList>();
 const Tab = createBottomTabNavigator<AdminTabParamList>();
 
 const icons: Record<keyof AdminTabParamList, AppIconName> = {
@@ -24,7 +28,7 @@ const icons: Record<keyof AdminTabParamList, AppIconName> = {
   AdminMore: 'Menu',
 };
 
-export function AdminNavigator() {
+function AdminTabs() {
   const theme = useAppTheme();
   const insets = useSafeAreaInsets();
 
@@ -76,5 +80,14 @@ export function AdminNavigator() {
         options={{ title: 'More' }}
       />
     </Tab.Navigator>
+  );
+}
+
+export function AdminNavigator() {
+  return (
+    <Stack.Navigator screenOptions={{ headerShown: false }}>
+      <Stack.Screen name="AdminTabs" component={AdminTabs} />
+      <Stack.Screen name="AdminServices" component={AdminServicesScreen} />
+    </Stack.Navigator>
   );
 }
