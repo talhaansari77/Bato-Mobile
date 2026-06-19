@@ -16,6 +16,8 @@ import { AdminPatientsScreen } from '../../modules/admin/screens/AdminPatientsSc
 import { AdminDoctorsScreen } from '../../modules/admin/screens/AdminDoctorsScreen';
 import { AdminMoreScreen } from '../../modules/admin/screens/AdminMoreScreen';
 import { AdminServicesScreen } from '../../modules/admin/screens/AdminMoreScreen/AdminServicesScreen';
+import { AdminReportsScreen } from '../../modules/admin/screens/AdminMoreScreen/AdminReportsScreen';
+import { AdminPaymentsScreen } from '../../modules/admin/screens/AdminMoreScreen/AdminPaymentsScreen';
 
 const Stack = createNativeStackNavigator<AdminStackParamList>();
 const Tab = createBottomTabNavigator<AdminTabParamList>();
@@ -88,6 +90,8 @@ export function AdminNavigator() {
     <Stack.Navigator screenOptions={{ headerShown: false }}>
       <Stack.Screen name="AdminTabs" component={AdminTabs} />
       <Stack.Screen name="AdminServices" component={AdminServicesScreen} />
+      <Stack.Screen name="AdminReports" component={AdminReportsScreen} />
+      <Stack.Screen name="AdminPayments" component={AdminPaymentsScreen} />
     </Stack.Navigator>
   );
 }
