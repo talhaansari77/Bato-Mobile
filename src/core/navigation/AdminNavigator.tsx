@@ -15,9 +15,10 @@ import { AdminAppointmentsScreen } from '../../modules/admin/screens/AdminAppoin
 import { AdminPatientsScreen } from '../../modules/admin/screens/AdminPatientsScreen';
 import { AdminDoctorsScreen } from '../../modules/admin/screens/AdminDoctorsScreen';
 import { AdminMoreScreen } from '../../modules/admin/screens/AdminMoreScreen';
-import { AdminServicesScreen } from '../../modules/admin/screens/AdminMoreScreen/AdminServicesScreen';
-import { AdminReportsScreen } from '../../modules/admin/screens/AdminMoreScreen/AdminReportsScreen';
-import { AdminPaymentsScreen } from '../../modules/admin/screens/AdminMoreScreen/AdminPaymentsScreen';
+import { AdminServicesScreen } from '../../modules/admin/screens/AdminServicesScreen';
+import { AdminReportsScreen } from '../../modules/admin/screens/AdminReportsScreen';
+import { AdminPaymentsScreen } from '../../modules/admin/screens/AdminPaymentsScreen';
+import { AdminPromotionsScreen } from '../../modules/admin/screens/AdminPromotionsScreen';
 
 const Stack = createNativeStackNavigator<AdminStackParamList>();
 const Tab = createBottomTabNavigator<AdminTabParamList>();
@@ -92,6 +93,7 @@ export function AdminNavigator() {
       <Stack.Screen name="AdminServices" component={AdminServicesScreen} />
       <Stack.Screen name="AdminReports" component={AdminReportsScreen} />
       <Stack.Screen name="AdminPayments" component={AdminPaymentsScreen} />
+      <Stack.Screen name="AdminPromotions" component={AdminPromotionsScreen} />
     </Stack.Navigator>
   );
 }

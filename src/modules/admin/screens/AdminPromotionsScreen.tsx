@@ -1,12 +1,12 @@
 import React, { useMemo, useState } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 
-import { useAppTheme } from '../../../../app/providers/ThemeProvider';
-import { AppButton } from '../../../../shared/ui/atoms/AppButton';
-import { AppIcon, AppIconName } from '../../../../shared/ui/atoms/AppIcon';
-import { AppInput } from '../../../../shared/ui/atoms/AppInput';
-import { AppText } from '../../../../shared/ui/atoms/AppText';
-import { Screen } from '../../../../shared/ui/templates/Screen';
+import { useAppTheme } from '../../../app/providers/ThemeProvider';
+import { AppButton } from '../../../shared/ui/atoms/AppButton';
+import { AppIcon, AppIconName } from '../../../shared/ui/atoms/AppIcon';
+import { AppInput } from '../../../shared/ui/atoms/AppInput';
+import { AppText } from '../../../shared/ui/atoms/AppText';
+import { Screen } from '../../../shared/ui/templates/Screen';
 
 type PromotionStatus = 'active' | 'scheduled' | 'expired';
 type FilterType = 'all' | PromotionStatus;

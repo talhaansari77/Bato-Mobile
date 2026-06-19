@@ -1,10 +1,10 @@
 import React, { useMemo, useState } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 
-import { useAppTheme } from '../../../../app/providers/ThemeProvider';
-import { AppIcon, AppIconName } from '../../../../shared/ui/atoms/AppIcon';
-import { AppText } from '../../../../shared/ui/atoms/AppText';
-import { Screen } from '../../../../shared/ui/templates/Screen';
+import { useAppTheme } from '../../../app/providers/ThemeProvider';
+import { AppIcon, AppIconName } from '../../../shared/ui/atoms/AppIcon';
+import { AppText } from '../../../shared/ui/atoms/AppText';
+import { Screen } from '../../../shared/ui/templates/Screen';
 
 type ReportFilter = 'today' | 'week' | 'month';
 
