@@ -2,6 +2,14 @@ import React, { useMemo, useState } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 
 import { useAppTheme } from '../../../app/providers/ThemeProvider';
+import {
+  AdminCard,
+  AdminDetailItem,
+  AdminFilterChips,
+  AdminHeroCard,
+  AdminSectionHeader,
+  AdminStatusBadge,
+} from '../components';
 import { AppIcon, AppIconName } from '../../../shared/ui/atoms/AppIcon';
 import { AppInput } from '../../../shared/ui/atoms/AppInput';
 import { AppText } from '../../../shared/ui/atoms/AppText';
@@ -108,34 +116,19 @@ export function AdminPaymentsScreen() {
       ]}
     >
       <View style={styles.root}>
-        <View style={styles.summaryCard}>
-          <View style={styles.summaryTop}>
-            <View style={styles.summaryIcon}>
-              <AppIcon
-                name="CreditCard"
-                size={34}
-                color={theme.colors.primaryDark}
-              />
-            </View>
-
-            <View style={styles.cardText}>
-              <AppText variant="h2">Payment Center</AppText>
-
-              <AppText color={theme.colors.textMuted}>
-                Track online payments, pay-at-clinic collections, refunds, and
-                pending transaction actions.
-              </AppText>
-            </View>
-          </View>
-
+        <AdminHeroCard
+          icon="CreditCard"
+          title="Payment Center"
+          description="Track online payments, pay-at-clinic collections, refunds, and pending transaction actions."
+        >
           <View style={styles.statsRow}>
-            <StatItem label="Today" value="1,240 KWD" />
+            <SummaryItem label="Today" value="1,240 KWD" />
             <View style={styles.statDivider} />
-            <StatItem label="Pending" value="25 KWD" />
+            <SummaryItem label="Pending" value="25 KWD" />
           </View>
-        </View>
+        </AdminHeroCard>
 
-        <View style={styles.revenueCard}>
+        <AdminCard style={styles.revenueCard}>
           <View style={styles.revenueIcon}>
             <AppIcon
               name="ChartNoAxesColumnIncreasing"
@@ -165,7 +158,7 @@ export function AdminPaymentsScreen() {
               +12%
             </AppText>
           </View>
-        </View>
+        </AdminCard>
 
         <AppInput
           value={search}
@@ -176,44 +169,17 @@ export function AdminPaymentsScreen() {
           onRightIconPress={() => setSearch('')}
         />
 
-        <View style={styles.filterRow}>
-          {filters.map((filter) => {
-            const isSelected = selectedFilter === filter.value;
-
-            return (
-              <Pressable
-                key={filter.value}
-                onPress={() => setSelectedFilter(filter.value)}
-                style={({ pressed }) => [
-                  styles.filterChip,
-                  isSelected && styles.filterChipActive,
-                  pressed && styles.pressed,
-                ]}
-              >
-                <AppText
-                  variant="caption"
-                  color={
-                    isSelected
-                      ? theme.colors.primaryDark
-                      : theme.colors.textMuted
-                  }
-                  style={isSelected ? styles.selectedText : undefined}
-                >
-                  {filter.label}
-                </AppText>
-              </Pressable>
-            );
-          })}
-        </View>
+        <AdminFilterChips
+          options={filters}
+          selectedValue={selectedFilter}
+          onChange={setSelectedFilter}
+        />
 
         <View style={styles.section}>
-          <View>
-            <AppText variant="h3">Transactions</AppText>
-
-            <AppText variant="caption" color={theme.colors.textMuted}>
-              {filteredPayments.length} payments found
-            </AppText>
-          </View>
+          <AdminSectionHeader
+            title="Transactions"
+            subtitle={`${filteredPayments.length} payments found`}
+          />
 
           <View style={styles.list}>
             {filteredPayments.map((payment) => (
@@ -226,7 +192,7 @@ export function AdminPaymentsScreen() {
   );
 }
 
-function StatItem({ label, value }: { label: string; value: string }) {
+function SummaryItem({ label, value }: { label: string; value: string }) {
   const theme = useAppTheme();
 
   return (
@@ -246,7 +212,7 @@ function PaymentCard({ payment }: { payment: Payment }) {
   const theme = useAppTheme();
   const styles = useMemo(() => createStyles(theme), [theme]);
 
-  const statusConfig = getStatusConfig(payment.status, theme);
+  const statusConfig = getStatusConfig(payment.status);
 
   return (
     <Pressable
@@ -267,18 +233,10 @@ function PaymentCard({ payment }: { payment: Payment }) {
               {payment.patientName}
             </AppText>
 
-            <View
-              style={[
-                styles.statusBadge,
-                {
-                  backgroundColor: statusConfig.backgroundColor,
-                },
-              ]}
-            >
-              <AppText variant="small" color={statusConfig.textColor}>
-                {statusConfig.label}
-              </AppText>
-            </View>
+            <AdminStatusBadge
+              label={statusConfig.label}
+              type={statusConfig.type}
+            />
           </View>
 
           <AppText variant="caption" color={theme.colors.textMuted}>
@@ -288,62 +246,42 @@ function PaymentCard({ payment }: { payment: Payment }) {
       </View>
 
       <View style={styles.detailsBox}>
-        <DetailItem icon="CircleDollarSign" label="Amount" value={payment.amount} />
-        <DetailItem icon="CreditCard" label="Method" value={payment.method} />
-        <DetailItem icon="Calendar" label="Date" value={payment.date} />
+        <AdminDetailItem
+          icon="CircleDollarSign"
+          label="Amount"
+          value={payment.amount}
+        />
+
+        <AdminDetailItem
+          icon="CreditCard"
+          label="Method"
+          value={payment.method}
+        />
+
+        <AdminDetailItem icon="Calendar" label="Date" value={payment.date} />
       </View>
     </Pressable>
   );
 }
 
-function DetailItem({
-  icon,
-  label,
-  value,
-}: {
-  icon: AppIconName;
+function getStatusConfig(status: PaymentStatus): {
   label: string;
-  value: string;
-}) {
-  const theme = useAppTheme();
-  const styles = useMemo(() => createStyles(theme), [theme]);
-
-  return (
-    <View style={styles.detailItem}>
-      <AppIcon name={icon} size={17} color={theme.colors.primaryDark} />
-
-      <View>
-        <AppText variant="small" color={theme.colors.textMuted}>
-          {label}
-        </AppText>
-
-        <AppText variant="caption">{value}</AppText>
-      </View>
-    </View>
-  );
-}
-
-function getStatusConfig(
-  status: PaymentStatus,
-  theme: ReturnType<typeof useAppTheme>,
-) {
+  type: 'success' | 'warning' | 'error' | 'info';
+} {
   const config = {
     paid: {
       label: 'Paid',
-      backgroundColor: theme.colors.success,
-      textColor: theme.colors.successText,
+      type: 'success',
     },
     pending: {
       label: 'Pending',
-      backgroundColor: theme.colors.warning,
-      textColor: theme.colors.warningText,
+      type: 'warning',
     },
     refunded: {
       label: 'Refunded',
-      backgroundColor: theme.colors.error,
-      textColor: theme.colors.errorText,
+      type: 'error',
     },
-  };
+  } as const;
 
   return config[status];
 }
@@ -352,35 +290,6 @@ function createStyles(theme: ReturnType<typeof useAppTheme>) {
   return StyleSheet.create({
     root: {
       gap: theme.spacing.xl,
-    },
-
-    summaryCard: {
-      borderRadius: theme.radius['2xl'],
-      backgroundColor: theme.colors.card,
-      borderWidth: 1,
-      borderColor: theme.colors.border,
-      padding: theme.spacing.xl,
-      gap: theme.spacing.lg,
-      ...(theme.shadows.card ?? {}),
-    },
-
-    summaryTop: {
-      flexDirection: 'row',
-      gap: theme.spacing.md,
-    },
-
-    summaryIcon: {
-      width: 70,
-      height: 70,
-      borderRadius: theme.radius['2xl'],
-      backgroundColor: theme.colors.cardMuted,
-      alignItems: 'center',
-      justifyContent: 'center',
-    },
-
-    cardText: {
-      flex: 1,
-      gap: theme.spacing.xs,
     },
 
     statsRow: {
@@ -400,14 +309,9 @@ function createStyles(theme: ReturnType<typeof useAppTheme>) {
     },
 
     revenueCard: {
-      borderRadius: theme.radius.xl,
       backgroundColor: theme.colors.info,
-      borderWidth: 1,
-      borderColor: theme.colors.border,
-      padding: theme.spacing.lg,
       flexDirection: 'row',
       alignItems: 'center',
-      gap: theme.spacing.md,
     },
 
     revenueIcon: {
@@ -419,6 +323,11 @@ function createStyles(theme: ReturnType<typeof useAppTheme>) {
       justifyContent: 'center',
     },
 
+    cardText: {
+      flex: 1,
+      gap: theme.spacing.xs,
+    },
+
     growthBadge: {
       flexDirection: 'row',
       alignItems: 'center',
@@ -427,32 +336,6 @@ function createStyles(theme: ReturnType<typeof useAppTheme>) {
       paddingVertical: theme.spacing.xs,
       borderRadius: theme.radius.full,
       backgroundColor: theme.colors.success,
-    },
-
-    filterRow: {
-      flexDirection: 'row',
-      flexWrap: 'wrap',
-      gap: theme.spacing.sm,
-    },
-
-    filterChip: {
-      minHeight: 40,
-      paddingHorizontal: theme.spacing.md,
-      borderRadius: theme.radius.full,
-      borderWidth: 1,
-      borderColor: theme.colors.border,
-      backgroundColor: theme.colors.card,
-      alignItems: 'center',
-      justifyContent: 'center',
-    },
-
-    filterChipActive: {
-      borderColor: theme.colors.primaryDark,
-      backgroundColor: theme.colors.cardMuted,
-    },
-
-    selectedText: {
-      fontWeight: '700',
     },
 
     section: {
@@ -498,12 +381,6 @@ function createStyles(theme: ReturnType<typeof useAppTheme>) {
       flex: 1,
     },
 
-    statusBadge: {
-      paddingHorizontal: theme.spacing.sm,
-      paddingVertical: theme.spacing.xs,
-      borderRadius: theme.radius.full,
-    },
-
     detailsBox: {
       borderRadius: theme.radius.lg,
       backgroundColor: theme.colors.background,
@@ -511,12 +388,6 @@ function createStyles(theme: ReturnType<typeof useAppTheme>) {
       borderColor: theme.colors.border,
       padding: theme.spacing.md,
       gap: theme.spacing.md,
-    },
-
-    detailItem: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      gap: theme.spacing.sm,
     },
 
     pressed: {

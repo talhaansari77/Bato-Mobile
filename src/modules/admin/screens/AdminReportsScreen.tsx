@@ -2,6 +2,12 @@ import React, { useMemo, useState } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 
 import { useAppTheme } from '../../../app/providers/ThemeProvider';
+import {
+  AdminCard,
+  AdminFilterChips,
+  AdminHeroCard,
+  AdminSectionHeader,
+} from '../components';
 import { AppIcon, AppIconName } from '../../../shared/ui/atoms/AppIcon';
 import { AppText } from '../../../shared/ui/atoms/AppText';
 import { Screen } from '../../../shared/ui/templates/Screen';
@@ -72,91 +78,31 @@ export function AdminReportsScreen() {
       ]}
     >
       <View style={styles.root}>
-        <View style={styles.heroCard}>
-          <View style={styles.heroIcon}>
-            <AppIcon
-              name="ChartNoAxesColumnIncreasing"
-              size={34}
-              color={theme.colors.primaryDark}
-            />
-          </View>
+        <AdminHeroCard
+          icon="ChartNoAxesColumnIncreasing"
+          title="Clinic Reports"
+          description="Track revenue, appointments, patient growth, doctor performance, and service demand."
+        />
 
-          <View style={styles.cardText}>
-            <AppText variant="h2">Clinic Reports</AppText>
-
-            <AppText color={theme.colors.textMuted}>
-              Track revenue, appointments, patient growth, doctor performance,
-              and service demand.
-            </AppText>
-          </View>
-        </View>
-
-        <View style={styles.filterRow}>
-          {filters.map((filter) => {
-            const isSelected = selectedFilter === filter.value;
-
-            return (
-              <Pressable
-                key={filter.value}
-                onPress={() => setSelectedFilter(filter.value)}
-                style={({ pressed }) => [
-                  styles.filterChip,
-                  isSelected && styles.filterChipActive,
-                  pressed && styles.pressed,
-                ]}
-              >
-                <AppText
-                  variant="caption"
-                  color={
-                    isSelected
-                      ? theme.colors.primaryDark
-                      : theme.colors.textMuted
-                  }
-                  style={isSelected ? styles.selectedText : undefined}
-                >
-                  {filter.label}
-                </AppText>
-              </Pressable>
-            );
-          })}
-        </View>
+        <AdminFilterChips
+          options={filters}
+          selectedValue={selectedFilter}
+          onChange={setSelectedFilter}
+        />
 
         <View style={styles.metricsGrid}>
           {metrics.map((metric) => (
-            <View key={metric.id} style={styles.metricCard}>
-              <View style={styles.metricIcon}>
-                <AppIcon
-                  name={metric.icon}
-                  size={22}
-                  color={theme.colors.primaryDark}
-                />
-              </View>
-
-              <AppText variant="h3">{metric.value}</AppText>
-
-              <AppText variant="caption" color={theme.colors.textMuted}>
-                {metric.label}
-              </AppText>
-
-              <View style={styles.changeBadge}>
-                <AppIcon
-                  name="TrendingUp"
-                  size={14}
-                  color={theme.colors.successText}
-                />
-
-                <AppText variant="small" color={theme.colors.successText}>
-                  {metric.change}
-                </AppText>
-              </View>
-            </View>
+            <MetricCard key={metric.id} metric={metric} />
           ))}
         </View>
 
         <View style={styles.section}>
-          <AppText variant="h3">Service Demand</AppText>
+          <AdminSectionHeader
+            title="Service Demand"
+            subtitle="Most requested treatments"
+          />
 
-          <View style={styles.card}>
+          <AdminCard style={styles.reportCard}>
             <ReportRow
               icon="Sparkles"
               title="Hair Growth Treatment"
@@ -179,14 +125,18 @@ export function AdminReportsScreen() {
               subtitle="Popular follow-up service"
               value="52 bookings"
               progress={52}
+              isLast
             />
-          </View>
+          </AdminCard>
         </View>
 
         <View style={styles.section}>
-          <AppText variant="h3">Doctor Performance</AppText>
+          <AdminSectionHeader
+            title="Doctor Performance"
+            subtitle="Rating and patient activity"
+          />
 
-          <View style={styles.card}>
+          <AdminCard style={styles.reportCard}>
             <ReportRow
               icon="Stethoscope"
               title="Dr. Sarah Ahmed"
@@ -209,11 +159,47 @@ export function AdminReportsScreen() {
               subtitle="Facial Therapy"
               value="4.7 rating"
               progress={78}
+              isLast
             />
-          </View>
+          </AdminCard>
         </View>
       </View>
     </Screen>
+  );
+}
+
+function MetricCard({ metric }: { metric: ReportMetric }) {
+  const theme = useAppTheme();
+  const styles = useMemo(() => createStyles(theme), [theme]);
+
+  return (
+    <AdminCard style={styles.metricCard}>
+      <View style={styles.metricIcon}>
+        <AppIcon
+          name={metric.icon}
+          size={22}
+          color={theme.colors.primaryDark}
+        />
+      </View>
+
+      <AppText variant="h3">{metric.value}</AppText>
+
+      <AppText variant="caption" color={theme.colors.textMuted}>
+        {metric.label}
+      </AppText>
+
+      <View style={styles.changeBadge}>
+        <AppIcon
+          name="TrendingUp"
+          size={14}
+          color={theme.colors.successText}
+        />
+
+        <AppText variant="small" color={theme.colors.successText}>
+          {metric.change}
+        </AppText>
+      </View>
+    </AdminCard>
   );
 }
 
@@ -223,18 +209,20 @@ function ReportRow({
   subtitle,
   value,
   progress,
+  isLast = false,
 }: {
   icon: AppIconName;
   title: string;
   subtitle: string;
   value: string;
   progress: number;
+  isLast?: boolean;
 }) {
   const theme = useAppTheme();
   const styles = useMemo(() => createStyles(theme), [theme]);
 
   return (
-    <View style={styles.reportRow}>
+    <View style={[styles.reportRow, isLast && styles.lastReportRow]}>
       <View style={styles.rowIcon}>
         <AppIcon name={icon} size={20} color={theme.colors.primaryDark} />
       </View>
@@ -268,56 +256,6 @@ function createStyles(theme: ReturnType<typeof useAppTheme>) {
       gap: theme.spacing.xl,
     },
 
-    heroCard: {
-      borderRadius: theme.radius['2xl'],
-      backgroundColor: theme.colors.card,
-      borderWidth: 1,
-      borderColor: theme.colors.border,
-      padding: theme.spacing.xl,
-      flexDirection: 'row',
-      gap: theme.spacing.md,
-      ...(theme.shadows.card ?? {}),
-    },
-
-    heroIcon: {
-      width: 70,
-      height: 70,
-      borderRadius: theme.radius['2xl'],
-      backgroundColor: theme.colors.cardMuted,
-      alignItems: 'center',
-      justifyContent: 'center',
-    },
-
-    cardText: {
-      flex: 1,
-      gap: theme.spacing.xs,
-    },
-
-    filterRow: {
-      flexDirection: 'row',
-      gap: theme.spacing.sm,
-    },
-
-    filterChip: {
-      flex: 1,
-      minHeight: 42,
-      borderRadius: theme.radius.full,
-      borderWidth: 1,
-      borderColor: theme.colors.border,
-      backgroundColor: theme.colors.card,
-      alignItems: 'center',
-      justifyContent: 'center',
-    },
-
-    filterChipActive: {
-      borderColor: theme.colors.primaryDark,
-      backgroundColor: theme.colors.cardMuted,
-    },
-
-    selectedText: {
-      fontWeight: '700',
-    },
-
     metricsGrid: {
       flexDirection: 'row',
       flexWrap: 'wrap',
@@ -327,13 +265,6 @@ function createStyles(theme: ReturnType<typeof useAppTheme>) {
     metricCard: {
       width: '47.8%',
       minHeight: 154,
-      borderRadius: theme.radius.xl,
-      backgroundColor: theme.colors.card,
-      borderWidth: 1,
-      borderColor: theme.colors.border,
-      padding: theme.spacing.lg,
-      gap: theme.spacing.xs,
-      ...(theme.shadows.card ?? {}),
     },
 
     metricIcon: {
@@ -362,13 +293,10 @@ function createStyles(theme: ReturnType<typeof useAppTheme>) {
       gap: theme.spacing.md,
     },
 
-    card: {
-      borderRadius: theme.radius.xl,
-      backgroundColor: theme.colors.card,
-      borderWidth: 1,
-      borderColor: theme.colors.border,
+    reportCard: {
+      padding: 0,
       overflow: 'hidden',
-      ...(theme.shadows.card ?? {}),
+      gap: 0,
     },
 
     reportRow: {
@@ -379,6 +307,10 @@ function createStyles(theme: ReturnType<typeof useAppTheme>) {
       borderBottomColor: theme.colors.border,
     },
 
+    lastReportRow: {
+      borderBottomWidth: 0,
+    },
+
     rowIcon: {
       width: 44,
       height: 44,
@@ -386,6 +318,11 @@ function createStyles(theme: ReturnType<typeof useAppTheme>) {
       backgroundColor: theme.colors.cardMuted,
       alignItems: 'center',
       justifyContent: 'center',
+    },
+
+    cardText: {
+      flex: 1,
+      gap: theme.spacing.xs,
     },
 
     rowTop: {
@@ -410,11 +347,6 @@ function createStyles(theme: ReturnType<typeof useAppTheme>) {
       height: '100%',
       borderRadius: theme.radius.full,
       backgroundColor: theme.colors.primaryDark,
-    },
-
-    pressed: {
-      opacity: 0.82,
-      transform: [{ scale: 0.99 }],
     },
   });
 }

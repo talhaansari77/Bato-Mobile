@@ -2,6 +2,15 @@ import React, { useMemo, useState } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 
 import { useAppTheme } from '../../../app/providers/ThemeProvider';
+import {
+  AdminCard,
+  AdminDetailItem,
+  AdminEmptyState,
+  AdminFilterChips,
+  AdminHeroCard,
+  AdminSectionHeader,
+  AdminStatusBadge,
+} from '../components';
 import { AppButton } from '../../../shared/ui/atoms/AppButton';
 import { AppIcon, AppIconName } from '../../../shared/ui/atoms/AppIcon';
 import { AppInput } from '../../../shared/ui/atoms/AppInput';
@@ -140,34 +149,19 @@ export function AdminAppointmentsScreen() {
       ]}
     >
       <View style={styles.root}>
-        <View style={styles.summaryCard}>
-          <View style={styles.summaryTop}>
-            <View style={styles.summaryIcon}>
-              <AppIcon
-                name="CalendarClock"
-                size={34}
-                color={theme.colors.primaryDark}
-              />
-            </View>
-
-            <View style={styles.cardText}>
-              <AppText variant="h2">Appointment Control</AppText>
-
-              <AppText color={theme.colors.textMuted}>
-                Approve pay-at-clinic requests, review doctor assignments, and
-                manage booking statuses.
-              </AppText>
-            </View>
-          </View>
-
+        <AdminHeroCard
+          icon="CalendarClock"
+          title="Appointment Control"
+          description="Approve pay-at-clinic requests, review doctor assignments, and manage booking statuses."
+        >
           <View style={styles.statsRow}>
-            <StatItem label="Pending" value={`${pendingCount}`} />
+            <SummaryItem label="Pending" value={`${pendingCount}`} />
             <View style={styles.statDivider} />
-            <StatItem label="Confirmed" value={`${confirmedCount}`} />
+            <SummaryItem label="Confirmed" value={`${confirmedCount}`} />
             <View style={styles.statDivider} />
-            <StatItem label="Total" value={`${appointments.length}`} />
+            <SummaryItem label="Total" value={`${appointments.length}`} />
           </View>
-        </View>
+        </AdminHeroCard>
 
         <AppInput
           value={search}
@@ -178,43 +172,15 @@ export function AdminAppointmentsScreen() {
           onRightIconPress={() => setSearch('')}
         />
 
-        <View style={styles.filterRow}>
-          {filters.map((filter) => {
-            const isSelected = selectedFilter === filter.value;
+        <AdminFilterChips
+          options={filters}
+          selectedValue={selectedFilter}
+          onChange={setSelectedFilter}
+        />
 
-            return (
-              <Pressable
-                key={filter.value}
-                onPress={() => setSelectedFilter(filter.value)}
-                style={({ pressed }) => [
-                  styles.filterChip,
-                  isSelected && styles.filterChipActive,
-                  pressed && styles.pressed,
-                ]}
-              >
-                <AppText
-                  variant="caption"
-                  color={
-                    isSelected
-                      ? theme.colors.primaryDark
-                      : theme.colors.textMuted
-                  }
-                  style={isSelected ? styles.selectedText : undefined}
-                >
-                  {filter.label}
-                </AppText>
-              </Pressable>
-            );
-          })}
-        </View>
-
-        <View style={styles.noticeCard}>
+        <AdminCard style={styles.noticeCard}>
           <View style={styles.noticeIcon}>
-            <AppIcon
-              name="Info"
-              size={22}
-              color={theme.colors.warningText}
-            />
+            <AppIcon name="Info" size={22} color={theme.colors.warningText} />
           </View>
 
           <View style={styles.cardText}>
@@ -224,16 +190,13 @@ export function AdminAppointmentsScreen() {
               Pending cash bookings require admin approval before confirmation.
             </AppText>
           </View>
-        </View>
+        </AdminCard>
 
         <View style={styles.section}>
-          <View>
-            <AppText variant="h3">Appointment List</AppText>
-
-            <AppText variant="caption" color={theme.colors.textMuted}>
-              {filteredAppointments.length} bookings found
-            </AppText>
-          </View>
+          <AdminSectionHeader
+            title="Appointment List"
+            subtitle={`${filteredAppointments.length} bookings found`}
+          />
 
           <View style={styles.list}>
             {filteredAppointments.map((appointment) => (
@@ -246,34 +209,18 @@ export function AdminAppointmentsScreen() {
         </View>
 
         {filteredAppointments.length === 0 ? (
-          <View style={styles.emptyCard}>
-            <View style={styles.emptyIcon}>
-              <AppIcon
-                name="CalendarX"
-                size={30}
-                color={theme.colors.primaryDark}
-              />
-            </View>
-
-            <AppText variant="bodyMedium" align="center">
-              No appointments found
-            </AppText>
-
-            <AppText
-              variant="caption"
-              color={theme.colors.textMuted}
-              align="center"
-            >
-              Try another search term or choose a different status filter.
-            </AppText>
-          </View>
+          <AdminEmptyState
+            icon="CalendarX"
+            title="No appointments found"
+            description="Try another search term or choose a different status filter."
+          />
         ) : null}
       </View>
     </Screen>
   );
 }
 
-function StatItem({ label, value }: { label: string; value: string }) {
+function SummaryItem({ label, value }: { label: string; value: string }) {
   const theme = useAppTheme();
 
   return (
@@ -297,7 +244,7 @@ function AppointmentCard({
   const theme = useAppTheme();
   const styles = useMemo(() => createStyles(theme), [theme]);
 
-  const statusConfig = getStatusConfig(appointment.status, theme);
+  const statusConfig = getStatusConfig(appointment.status);
 
   return (
     <Pressable
@@ -321,18 +268,10 @@ function AppointmentCard({
               {appointment.patientName}
             </AppText>
 
-            <View
-              style={[
-                styles.statusBadge,
-                {
-                  backgroundColor: statusConfig.backgroundColor,
-                },
-              ]}
-            >
-              <AppText variant="small" color={statusConfig.textColor}>
-                {statusConfig.label}
-              </AppText>
-            </View>
+            <AdminStatusBadge
+              label={statusConfig.label}
+              type={statusConfig.type}
+            />
           </View>
 
           <AppText variant="caption" color={theme.colors.textMuted}>
@@ -346,15 +285,19 @@ function AppointmentCard({
       </View>
 
       <View style={styles.detailsBox}>
-        <DetailItem
+        <AdminDetailItem
           icon="Stethoscope"
           label="Doctor"
           value={appointment.doctorName}
         />
 
-        <DetailItem icon="MapPin" label="Branch" value={appointment.branch} />
+        <AdminDetailItem
+          icon="MapPin"
+          label="Branch"
+          value={appointment.branch}
+        />
 
-        <DetailItem
+        <AdminDetailItem
           icon="CreditCard"
           label="Payment"
           value={appointment.paymentType}
@@ -396,85 +339,69 @@ function AppointmentCard({
       ) : null}
 
       {appointment.status === 'completed' ? (
-        <View style={styles.infoRow}>
-          <AppIcon
-            name="CircleCheck"
-            size={17}
-            color={theme.colors.successText}
-          />
-
-          <AppText variant="caption" color={theme.colors.textMuted}>
-            This appointment has been completed.
-          </AppText>
-        </View>
+        <StatusInfo
+          icon="CircleCheck"
+          text="This appointment has been completed."
+          color={theme.colors.successText}
+        />
       ) : null}
 
       {appointment.status === 'cancelled' ? (
-        <View style={styles.infoRow}>
-          <AppIcon name="CircleX" size={17} color={theme.colors.errorText} />
-
-          <AppText variant="caption" color={theme.colors.textMuted}>
-            This appointment was cancelled.
-          </AppText>
-        </View>
+        <StatusInfo
+          icon="CircleX"
+          text="This appointment was cancelled."
+          color={theme.colors.errorText}
+        />
       ) : null}
     </Pressable>
   );
 }
 
-function DetailItem({
+function StatusInfo({
   icon,
-  label,
-  value,
+  text,
+  color,
 }: {
   icon: AppIconName;
-  label: string;
-  value: string;
+  text: string;
+  color: string;
 }) {
   const theme = useAppTheme();
   const styles = useMemo(() => createStyles(theme), [theme]);
 
   return (
-    <View style={styles.detailItem}>
-      <AppIcon name={icon} size={17} color={theme.colors.primaryDark} />
+    <View style={styles.infoRow}>
+      <AppIcon name={icon} size={17} color={color} />
 
-      <View>
-        <AppText variant="small" color={theme.colors.textMuted}>
-          {label}
-        </AppText>
-
-        <AppText variant="caption">{value}</AppText>
-      </View>
+      <AppText variant="caption" color={theme.colors.textMuted}>
+        {text}
+      </AppText>
     </View>
   );
 }
 
-function getStatusConfig(
-  status: AppointmentStatus,
-  theme: ReturnType<typeof useAppTheme>,
-) {
+function getStatusConfig(status: AppointmentStatus): {
+  label: string;
+  type: 'success' | 'warning' | 'error' | 'info';
+} {
   const config = {
     pending: {
       label: 'Pending',
-      backgroundColor: theme.colors.warning,
-      textColor: theme.colors.warningText,
+      type: 'warning',
     },
     confirmed: {
       label: 'Confirmed',
-      backgroundColor: theme.colors.success,
-      textColor: theme.colors.successText,
+      type: 'success',
     },
     completed: {
       label: 'Completed',
-      backgroundColor: theme.colors.info,
-      textColor: theme.colors.infoText,
+      type: 'info',
     },
     cancelled: {
       label: 'Cancelled',
-      backgroundColor: theme.colors.error,
-      textColor: theme.colors.errorText,
+      type: 'error',
     },
-  };
+  } as const;
 
   return config[status];
 }
@@ -483,35 +410,6 @@ function createStyles(theme: ReturnType<typeof useAppTheme>) {
   return StyleSheet.create({
     root: {
       gap: theme.spacing.xl,
-    },
-
-    summaryCard: {
-      borderRadius: theme.radius['2xl'],
-      backgroundColor: theme.colors.card,
-      borderWidth: 1,
-      borderColor: theme.colors.border,
-      padding: theme.spacing.xl,
-      gap: theme.spacing.lg,
-      ...(theme.shadows.card ?? {}),
-    },
-
-    summaryTop: {
-      flexDirection: 'row',
-      gap: theme.spacing.md,
-    },
-
-    summaryIcon: {
-      width: 70,
-      height: 70,
-      borderRadius: theme.radius['2xl'],
-      backgroundColor: theme.colors.cardMuted,
-      alignItems: 'center',
-      justifyContent: 'center',
-    },
-
-    cardText: {
-      flex: 1,
-      gap: theme.spacing.xs,
     },
 
     statsRow: {
@@ -530,41 +428,10 @@ function createStyles(theme: ReturnType<typeof useAppTheme>) {
       backgroundColor: theme.colors.border,
     },
 
-    filterRow: {
-      flexDirection: 'row',
-      flexWrap: 'wrap',
-      gap: theme.spacing.sm,
-    },
-
-    filterChip: {
-      minHeight: 40,
-      paddingHorizontal: theme.spacing.md,
-      borderRadius: theme.radius.full,
-      borderWidth: 1,
-      borderColor: theme.colors.border,
-      backgroundColor: theme.colors.card,
-      alignItems: 'center',
-      justifyContent: 'center',
-    },
-
-    filterChipActive: {
-      borderColor: theme.colors.primaryDark,
-      backgroundColor: theme.colors.cardMuted,
-    },
-
-    selectedText: {
-      fontWeight: '700',
-    },
-
     noticeCard: {
-      borderRadius: theme.radius.xl,
       backgroundColor: theme.colors.warning,
-      borderWidth: 1,
-      borderColor: theme.colors.border,
-      padding: theme.spacing.lg,
       flexDirection: 'row',
       alignItems: 'center',
-      gap: theme.spacing.md,
     },
 
     noticeIcon: {
@@ -574,6 +441,11 @@ function createStyles(theme: ReturnType<typeof useAppTheme>) {
       backgroundColor: theme.colors.card,
       alignItems: 'center',
       justifyContent: 'center',
+    },
+
+    cardText: {
+      flex: 1,
+      gap: theme.spacing.xs,
     },
 
     section: {
@@ -618,12 +490,6 @@ function createStyles(theme: ReturnType<typeof useAppTheme>) {
       flex: 1,
     },
 
-    statusBadge: {
-      paddingHorizontal: theme.spacing.sm,
-      paddingVertical: theme.spacing.xs,
-      borderRadius: theme.radius.full,
-    },
-
     detailsBox: {
       borderRadius: theme.radius.lg,
       backgroundColor: theme.colors.background,
@@ -631,12 +497,6 @@ function createStyles(theme: ReturnType<typeof useAppTheme>) {
       borderColor: theme.colors.border,
       padding: theme.spacing.md,
       gap: theme.spacing.md,
-    },
-
-    detailItem: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      gap: theme.spacing.sm,
     },
 
     actionRow: {
@@ -659,27 +519,6 @@ function createStyles(theme: ReturnType<typeof useAppTheme>) {
       flexDirection: 'row',
       alignItems: 'center',
       gap: theme.spacing.xs,
-    },
-
-    emptyCard: {
-      borderRadius: theme.radius.xl,
-      backgroundColor: theme.colors.card,
-      borderWidth: 1,
-      borderColor: theme.colors.border,
-      padding: theme.spacing['2xl'],
-      alignItems: 'center',
-      gap: theme.spacing.sm,
-      ...(theme.shadows.card ?? {}),
-    },
-
-    emptyIcon: {
-      width: 58,
-      height: 58,
-      borderRadius: theme.radius.full,
-      backgroundColor: theme.colors.cardMuted,
-      alignItems: 'center',
-      justifyContent: 'center',
-      marginBottom: theme.spacing.sm,
     },
 
     pressed: {

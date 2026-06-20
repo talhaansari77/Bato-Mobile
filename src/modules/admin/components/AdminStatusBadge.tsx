@@ -4,49 +4,45 @@ import { View } from 'react-native';
 import { useAppTheme } from '../../../app/providers/ThemeProvider';
 import { AppText } from '../../../shared/ui/atoms/AppText';
 
+type StatusType = 'success' | 'warning' | 'error' | 'info';
+
 type Props = {
   label: string;
-  type: 'success' | 'warning' | 'error' | 'info';
+  type: StatusType;
 };
 
-export function AdminStatusBadge({
-  label,
-  type,
-}: Props) {
+export function AdminStatusBadge({ label, type }: Props) {
   const theme = useAppTheme();
 
-  const colors = {
+  const map = {
     success: {
-      bg: theme.colors.success,
-      text: theme.colors.successText,
+      backgroundColor: theme.colors.success,
+      color: theme.colors.successText,
     },
     warning: {
-      bg: theme.colors.warning,
-      text: theme.colors.warningText,
+      backgroundColor: theme.colors.warning,
+      color: theme.colors.warningText,
     },
     error: {
-      bg: theme.colors.error,
-      text: theme.colors.errorText,
+      backgroundColor: theme.colors.error,
+      color: theme.colors.errorText,
     },
     info: {
-      bg: theme.colors.info,
-      text: theme.colors.infoText,
+      backgroundColor: theme.colors.info,
+      color: theme.colors.infoText,
     },
   };
 
   return (
     <View
       style={{
-        backgroundColor: colors[type].bg,
         paddingHorizontal: theme.spacing.sm,
         paddingVertical: theme.spacing.xs,
         borderRadius: theme.radius.full,
+        backgroundColor: map[type].backgroundColor,
       }}
     >
-      <AppText
-        variant="small"
-        color={colors[type].text}
-      >
+      <AppText variant="small" color={map[type].color}>
         {label}
       </AppText>
     </View>

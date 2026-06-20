@@ -82,13 +82,13 @@ export function AdminBranchesScreen() {
 
         <View style={styles.statsRow}>
           <AdminStatCard
-            title="Branches"
+            label="Branches"
             value="3"
             icon="Building2"
           />
 
           <AdminStatCard
-            title="Doctors"
+            label="Doctors"
             value="12"
             icon="Stethoscope"
           />
@@ -96,13 +96,13 @@ export function AdminBranchesScreen() {
 
         <View style={styles.statsRow}>
           <AdminStatCard
-            title="Appointments"
+            label="Appointments"
             value="98"
             icon="CalendarDays"
           />
 
           <AdminStatCard
-            title="Active"
+            label="Active"
             value="2"
             icon="CircleCheck"
           />

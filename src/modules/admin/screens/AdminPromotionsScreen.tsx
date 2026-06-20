@@ -2,6 +2,13 @@ import React, { useMemo, useState } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 
 import { useAppTheme } from '../../../app/providers/ThemeProvider';
+import {
+  AdminEmptyState,
+  AdminFilterChips,
+  AdminHeroCard,
+  AdminSectionHeader,
+  AdminStatusBadge,
+} from '../components';
 import { AppButton } from '../../../shared/ui/atoms/AppButton';
 import { AppIcon, AppIconName } from '../../../shared/ui/atoms/AppIcon';
 import { AppInput } from '../../../shared/ui/atoms/AppInput';
@@ -85,6 +92,12 @@ export function AdminPromotionsScreen() {
     });
   }, [search, selectedFilter]);
 
+  const activeCount = promotions.filter((item) => item.status === 'active').length;
+  const scheduledCount = promotions.filter(
+    (item) => item.status === 'scheduled',
+  ).length;
+  const expiredCount = promotions.filter((item) => item.status === 'expired').length;
+
   return (
     <Screen
       title="Promotions"
@@ -98,36 +111,21 @@ export function AdminPromotionsScreen() {
       ]}
     >
       <View style={styles.root}>
-        <View style={styles.summaryCard}>
-          <View style={styles.summaryTop}>
-            <View style={styles.summaryIcon}>
-              <AppIcon
-                name="BadgePercent"
-                size={34}
-                color={theme.colors.primaryDark}
-              />
-            </View>
-
-            <View style={styles.cardText}>
-              <AppText variant="h2">Promotion Center</AppText>
-
-              <AppText color={theme.colors.textMuted}>
-                Manage offers, discounts, banners, coupon campaigns, and active
-                marketing promotions.
-              </AppText>
-            </View>
-          </View>
-
+        <AdminHeroCard
+          icon="BadgePercent"
+          title="Promotion Center"
+          description="Manage offers, discounts, banners, coupon campaigns, and active marketing promotions."
+        >
           <View style={styles.statsRow}>
-            <StatItem label="Active" value="1" />
+            <SummaryItem label="Active" value={`${activeCount}`} />
             <View style={styles.statDivider} />
-            <StatItem label="Scheduled" value="1" />
+            <SummaryItem label="Scheduled" value={`${scheduledCount}`} />
             <View style={styles.statDivider} />
-            <StatItem label="Expired" value="1" />
+            <SummaryItem label="Expired" value={`${expiredCount}`} />
           </View>
 
           <AppButton title="Create Promotion" />
-        </View>
+        </AdminHeroCard>
 
         <AppInput
           value={search}
@@ -138,44 +136,17 @@ export function AdminPromotionsScreen() {
           onRightIconPress={() => setSearch('')}
         />
 
-        <View style={styles.filterRow}>
-          {filters.map((filter) => {
-            const isSelected = selectedFilter === filter.value;
-
-            return (
-              <Pressable
-                key={filter.value}
-                onPress={() => setSelectedFilter(filter.value)}
-                style={({ pressed }) => [
-                  styles.filterChip,
-                  isSelected && styles.filterChipActive,
-                  pressed && styles.pressed,
-                ]}
-              >
-                <AppText
-                  variant="caption"
-                  color={
-                    isSelected
-                      ? theme.colors.primaryDark
-                      : theme.colors.textMuted
-                  }
-                  style={isSelected ? styles.selectedText : undefined}
-                >
-                  {filter.label}
-                </AppText>
-              </Pressable>
-            );
-          })}
-        </View>
+        <AdminFilterChips
+          options={filters}
+          selectedValue={selectedFilter}
+          onChange={setSelectedFilter}
+        />
 
         <View style={styles.section}>
-          <View>
-            <AppText variant="h3">Campaign List</AppText>
-
-            <AppText variant="caption" color={theme.colors.textMuted}>
-              {filteredPromotions.length} promotions found
-            </AppText>
-          </View>
+          <AdminSectionHeader
+            title="Campaign List"
+            subtitle={`${filteredPromotions.length} promotions found`}
+          />
 
           <View style={styles.list}>
             {filteredPromotions.map((promotion) => (
@@ -183,12 +154,19 @@ export function AdminPromotionsScreen() {
             ))}
           </View>
         </View>
+
+        {filteredPromotions.length === 0 ? (
+          <AdminEmptyState
+            title="No promotions found"
+            description="Try another keyword or change the promotion status filter."
+          />
+        ) : null}
       </View>
     </Screen>
   );
 }
 
-function StatItem({ label, value }: { label: string; value: string }) {
+function SummaryItem({ label, value }: { label: string; value: string }) {
   const theme = useAppTheme();
 
   return (
@@ -208,7 +186,7 @@ function PromotionCard({ promotion }: { promotion: Promotion }) {
   const theme = useAppTheme();
   const styles = useMemo(() => createStyles(theme), [theme]);
 
-  const statusConfig = getStatusConfig(promotion.status, theme);
+  const statusConfig = getStatusConfig(promotion.status);
 
   return (
     <Pressable
@@ -229,16 +207,10 @@ function PromotionCard({ promotion }: { promotion: Promotion }) {
               {promotion.title}
             </AppText>
 
-            <View
-              style={[
-                styles.statusBadge,
-                { backgroundColor: statusConfig.backgroundColor },
-              ]}
-            >
-              <AppText variant="small" color={statusConfig.textColor}>
-                {statusConfig.label}
-              </AppText>
-            </View>
+            <AdminStatusBadge
+              label={statusConfig.label}
+              type={statusConfig.type}
+            />
           </View>
 
           <AppText variant="caption" color={theme.colors.textMuted}>
@@ -293,27 +265,24 @@ function PromotionCard({ promotion }: { promotion: Promotion }) {
   );
 }
 
-function getStatusConfig(
-  status: PromotionStatus,
-  theme: ReturnType<typeof useAppTheme>,
-) {
+function getStatusConfig(status: PromotionStatus): {
+  label: string;
+  type: 'success' | 'warning' | 'error' | 'info';
+} {
   const config = {
     active: {
       label: 'Active',
-      backgroundColor: theme.colors.success,
-      textColor: theme.colors.successText,
+      type: 'success',
     },
     scheduled: {
       label: 'Scheduled',
-      backgroundColor: theme.colors.info,
-      textColor: theme.colors.infoText,
+      type: 'info',
     },
     expired: {
       label: 'Expired',
-      backgroundColor: theme.colors.error,
-      textColor: theme.colors.errorText,
+      type: 'error',
     },
-  };
+  } as const;
 
   return config[status];
 }
@@ -322,35 +291,6 @@ function createStyles(theme: ReturnType<typeof useAppTheme>) {
   return StyleSheet.create({
     root: {
       gap: theme.spacing.xl,
-    },
-
-    summaryCard: {
-      borderRadius: theme.radius['2xl'],
-      backgroundColor: theme.colors.card,
-      borderWidth: 1,
-      borderColor: theme.colors.border,
-      padding: theme.spacing.xl,
-      gap: theme.spacing.lg,
-      ...(theme.shadows.card ?? {}),
-    },
-
-    summaryTop: {
-      flexDirection: 'row',
-      gap: theme.spacing.md,
-    },
-
-    summaryIcon: {
-      width: 70,
-      height: 70,
-      borderRadius: theme.radius['2xl'],
-      backgroundColor: theme.colors.cardMuted,
-      alignItems: 'center',
-      justifyContent: 'center',
-    },
-
-    cardText: {
-      flex: 1,
-      gap: theme.spacing.xs,
     },
 
     statsRow: {
@@ -367,32 +307,6 @@ function createStyles(theme: ReturnType<typeof useAppTheme>) {
       width: 1,
       height: '65%',
       backgroundColor: theme.colors.border,
-    },
-
-    filterRow: {
-      flexDirection: 'row',
-      flexWrap: 'wrap',
-      gap: theme.spacing.sm,
-    },
-
-    filterChip: {
-      minHeight: 40,
-      paddingHorizontal: theme.spacing.md,
-      borderRadius: theme.radius.full,
-      borderWidth: 1,
-      borderColor: theme.colors.border,
-      backgroundColor: theme.colors.card,
-      alignItems: 'center',
-      justifyContent: 'center',
-    },
-
-    filterChipActive: {
-      borderColor: theme.colors.primaryDark,
-      backgroundColor: theme.colors.cardMuted,
-    },
-
-    selectedText: {
-      fontWeight: '700',
     },
 
     section: {
@@ -428,6 +342,11 @@ function createStyles(theme: ReturnType<typeof useAppTheme>) {
       justifyContent: 'center',
     },
 
+    cardText: {
+      flex: 1,
+      gap: theme.spacing.xs,
+    },
+
     titleRow: {
       flexDirection: 'row',
       alignItems: 'flex-start',
@@ -436,12 +355,6 @@ function createStyles(theme: ReturnType<typeof useAppTheme>) {
 
     title: {
       flex: 1,
-    },
-
-    statusBadge: {
-      paddingHorizontal: theme.spacing.sm,
-      paddingVertical: theme.spacing.xs,
-      borderRadius: theme.radius.full,
     },
 
     discountBox: {

@@ -2,6 +2,14 @@ import React, { useMemo, useState } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 
 import { useAppTheme } from '../../../app/providers/ThemeProvider';
+import {
+  AdminDetailItem,
+  AdminEmptyState,
+  AdminFilterChips,
+  AdminHeroCard,
+  AdminSectionHeader,
+  AdminStatusBadge,
+} from '../components';
 import { AppButton } from '../../../shared/ui/atoms/AppButton';
 import { AppIcon, AppIconName } from '../../../shared/ui/atoms/AppIcon';
 import { AppInput } from '../../../shared/ui/atoms/AppInput';
@@ -113,7 +121,10 @@ export function AdminPatientsScreen() {
     });
   }, [search, selectedFilter]);
 
-  const activeCount = patients.filter((patient) => patient.status === 'active').length;
+  const activeCount = patients.filter(
+    (patient) => patient.status === 'active',
+  ).length;
+
   const newCount = patients.filter((patient) => patient.status === 'new').length;
 
   return (
@@ -128,36 +139,21 @@ export function AdminPatientsScreen() {
       ]}
     >
       <View style={styles.root}>
-        <View style={styles.summaryCard}>
-          <View style={styles.summaryTop}>
-            <View style={styles.summaryIcon}>
-              <AppIcon
-                name="UsersRound"
-                size={34}
-                color={theme.colors.primaryDark}
-              />
-            </View>
-
-            <View style={styles.cardText}>
-              <AppText variant="h2">Patient Management</AppText>
-
-              <AppText color={theme.colors.textMuted}>
-                Manage patient profiles, treatment plans, appointment history,
-                and account status.
-              </AppText>
-            </View>
-          </View>
-
+        <AdminHeroCard
+          icon="UsersRound"
+          title="Patient Management"
+          description="Manage patient profiles, treatment plans, appointment history, and account status."
+        >
           <View style={styles.statsRow}>
-            <StatItem label="Total" value={`${patients.length}`} />
+            <SummaryItem label="Total" value={`${patients.length}`} />
             <View style={styles.statDivider} />
-            <StatItem label="Active" value={`${activeCount}`} />
+            <SummaryItem label="Active" value={`${activeCount}`} />
             <View style={styles.statDivider} />
-            <StatItem label="New" value={`${newCount}`} />
+            <SummaryItem label="New" value={`${newCount}`} />
           </View>
 
           <AppButton title="Add Patient" />
-        </View>
+        </AdminHeroCard>
 
         <AppInput
           value={search}
@@ -168,44 +164,17 @@ export function AdminPatientsScreen() {
           onRightIconPress={() => setSearch('')}
         />
 
-        <View style={styles.filterRow}>
-          {filters.map((filter) => {
-            const isSelected = selectedFilter === filter.value;
-
-            return (
-              <Pressable
-                key={filter.value}
-                onPress={() => setSelectedFilter(filter.value)}
-                style={({ pressed }) => [
-                  styles.filterChip,
-                  isSelected && styles.filterChipActive,
-                  pressed && styles.pressed,
-                ]}
-              >
-                <AppText
-                  variant="caption"
-                  color={
-                    isSelected
-                      ? theme.colors.primaryDark
-                      : theme.colors.textMuted
-                  }
-                  style={isSelected ? styles.selectedText : undefined}
-                >
-                  {filter.label}
-                </AppText>
-              </Pressable>
-            );
-          })}
-        </View>
+        <AdminFilterChips
+          options={filters}
+          selectedValue={selectedFilter}
+          onChange={setSelectedFilter}
+        />
 
         <View style={styles.section}>
-          <View>
-            <AppText variant="h3">Patient List</AppText>
-
-            <AppText variant="caption" color={theme.colors.textMuted}>
-              {filteredPatients.length} patients found
-            </AppText>
-          </View>
+          <AdminSectionHeader
+            title="Patient List"
+            subtitle={`${filteredPatients.length} patients found`}
+          />
 
           <View style={styles.list}>
             {filteredPatients.map((patient) => (
@@ -215,34 +184,17 @@ export function AdminPatientsScreen() {
         </View>
 
         {filteredPatients.length === 0 ? (
-          <View style={styles.emptyCard}>
-            <View style={styles.emptyIcon}>
-              <AppIcon
-                name="SearchX"
-                size={30}
-                color={theme.colors.primaryDark}
-              />
-            </View>
-
-            <AppText variant="bodyMedium" align="center">
-              No patients found
-            </AppText>
-
-            <AppText
-              variant="caption"
-              color={theme.colors.textMuted}
-              align="center"
-            >
-              Try another keyword or change the patient status filter.
-            </AppText>
-          </View>
+          <AdminEmptyState
+            title="No patients found"
+            description="Try another keyword or change the patient status filter."
+          />
         ) : null}
       </View>
     </Screen>
   );
 }
 
-function StatItem({ label, value }: { label: string; value: string }) {
+function SummaryItem({ label, value }: { label: string; value: string }) {
   const theme = useAppTheme();
 
   return (
@@ -262,7 +214,7 @@ function PatientCard({ patient }: { patient: AdminPatient }) {
   const theme = useAppTheme();
   const styles = useMemo(() => createStyles(theme), [theme]);
 
-  const statusConfig = getStatusConfig(patient.status, theme);
+  const statusConfig = getStatusConfig(patient.status);
 
   return (
     <Pressable
@@ -283,18 +235,10 @@ function PatientCard({ patient }: { patient: AdminPatient }) {
               {patient.name}
             </AppText>
 
-            <View
-              style={[
-                styles.statusBadge,
-                {
-                  backgroundColor: statusConfig.backgroundColor,
-                },
-              ]}
-            >
-              <AppText variant="small" color={statusConfig.textColor}>
-                {statusConfig.label}
-              </AppText>
-            </View>
+            <AdminStatusBadge
+              label={statusConfig.label}
+              type={statusConfig.type}
+            />
           </View>
 
           <AppText variant="caption" color={theme.colors.textMuted}>
@@ -326,10 +270,17 @@ function PatientCard({ patient }: { patient: AdminPatient }) {
       </View>
 
       <View style={styles.detailsBox}>
-        <DetailItem icon="MapPin" label="Branch" value={patient.branch} />
-        <DetailItem icon="CalendarCheck" label="Last Visit" value={patient.lastVisit} />
-        <DetailItem icon="Clock" label="Next Visit" value={patient.nextVisit} />
-        <DetailItem
+        <AdminDetailItem icon="MapPin" label="Branch" value={patient.branch} />
+
+        <AdminDetailItem
+          icon="CalendarCheck"
+          label="Last Visit"
+          value={patient.lastVisit}
+        />
+
+        <AdminDetailItem icon="Clock" label="Next Visit" value={patient.nextVisit} />
+
+        <AdminDetailItem
           icon="CalendarDays"
           label="Appointments"
           value={`${patient.appointments}`}
@@ -354,54 +305,24 @@ function PatientCard({ patient }: { patient: AdminPatient }) {
   );
 }
 
-function DetailItem({
-  icon,
-  label,
-  value,
-}: {
-  icon: AppIconName;
+function getStatusConfig(status: PatientStatus): {
   label: string;
-  value: string;
-}) {
-  const theme = useAppTheme();
-  const styles = useMemo(() => createStyles(theme), [theme]);
-
-  return (
-    <View style={styles.detailItem}>
-      <AppIcon name={icon} size={17} color={theme.colors.primaryDark} />
-
-      <View>
-        <AppText variant="small" color={theme.colors.textMuted}>
-          {label}
-        </AppText>
-
-        <AppText variant="caption">{value}</AppText>
-      </View>
-    </View>
-  );
-}
-
-function getStatusConfig(
-  status: PatientStatus,
-  theme: ReturnType<typeof useAppTheme>,
-) {
+  type: 'success' | 'warning' | 'error' | 'info';
+} {
   const config = {
     active: {
       label: 'Active',
-      backgroundColor: theme.colors.success,
-      textColor: theme.colors.successText,
+      type: 'success',
     },
     new: {
       label: 'New',
-      backgroundColor: theme.colors.info,
-      textColor: theme.colors.infoText,
+      type: 'info',
     },
     inactive: {
       label: 'Inactive',
-      backgroundColor: theme.colors.error,
-      textColor: theme.colors.errorText,
+      type: 'error',
     },
-  };
+  } as const;
 
   return config[status];
 }
@@ -410,35 +331,6 @@ function createStyles(theme: ReturnType<typeof useAppTheme>) {
   return StyleSheet.create({
     root: {
       gap: theme.spacing.xl,
-    },
-
-    summaryCard: {
-      borderRadius: theme.radius['2xl'],
-      backgroundColor: theme.colors.card,
-      borderWidth: 1,
-      borderColor: theme.colors.border,
-      padding: theme.spacing.xl,
-      gap: theme.spacing.lg,
-      ...(theme.shadows.card ?? {}),
-    },
-
-    summaryTop: {
-      flexDirection: 'row',
-      gap: theme.spacing.md,
-    },
-
-    summaryIcon: {
-      width: 70,
-      height: 70,
-      borderRadius: theme.radius['2xl'],
-      backgroundColor: theme.colors.cardMuted,
-      alignItems: 'center',
-      justifyContent: 'center',
-    },
-
-    cardText: {
-      flex: 1,
-      gap: theme.spacing.xs,
     },
 
     statsRow: {
@@ -455,32 +347,6 @@ function createStyles(theme: ReturnType<typeof useAppTheme>) {
       width: 1,
       height: '65%',
       backgroundColor: theme.colors.border,
-    },
-
-    filterRow: {
-      flexDirection: 'row',
-      flexWrap: 'wrap',
-      gap: theme.spacing.sm,
-    },
-
-    filterChip: {
-      minHeight: 40,
-      paddingHorizontal: theme.spacing.md,
-      borderRadius: theme.radius.full,
-      borderWidth: 1,
-      borderColor: theme.colors.border,
-      backgroundColor: theme.colors.card,
-      alignItems: 'center',
-      justifyContent: 'center',
-    },
-
-    filterChipActive: {
-      borderColor: theme.colors.primaryDark,
-      backgroundColor: theme.colors.cardMuted,
-    },
-
-    selectedText: {
-      fontWeight: '700',
     },
 
     section: {
@@ -516,6 +382,11 @@ function createStyles(theme: ReturnType<typeof useAppTheme>) {
       justifyContent: 'center',
     },
 
+    cardText: {
+      flex: 1,
+      gap: theme.spacing.xs,
+    },
+
     titleRow: {
       flexDirection: 'row',
       alignItems: 'flex-start',
@@ -524,12 +395,6 @@ function createStyles(theme: ReturnType<typeof useAppTheme>) {
 
     title: {
       flex: 1,
-    },
-
-    statusBadge: {
-      paddingHorizontal: theme.spacing.sm,
-      paddingVertical: theme.spacing.xs,
-      borderRadius: theme.radius.full,
     },
 
     planCard: {
@@ -561,12 +426,6 @@ function createStyles(theme: ReturnType<typeof useAppTheme>) {
       gap: theme.spacing.md,
     },
 
-    detailItem: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      gap: theme.spacing.sm,
-    },
-
     actionRow: {
       flexDirection: 'row',
       gap: theme.spacing.sm,
@@ -575,27 +434,6 @@ function createStyles(theme: ReturnType<typeof useAppTheme>) {
     actionButton: {
       flex: 1,
       minHeight: 42,
-    },
-
-    emptyCard: {
-      borderRadius: theme.radius.xl,
-      backgroundColor: theme.colors.card,
-      borderWidth: 1,
-      borderColor: theme.colors.border,
-      padding: theme.spacing['2xl'],
-      alignItems: 'center',
-      gap: theme.spacing.sm,
-      ...(theme.shadows.card ?? {}),
-    },
-
-    emptyIcon: {
-      width: 58,
-      height: 58,
-      borderRadius: theme.radius.full,
-      backgroundColor: theme.colors.cardMuted,
-      alignItems: 'center',
-      justifyContent: 'center',
-      marginBottom: theme.spacing.sm,
     },
 
     pressed: {

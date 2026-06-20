@@ -2,6 +2,14 @@ import React, { useMemo, useState } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 
 import { useAppTheme } from '../../../app/providers/ThemeProvider';
+import {
+  AdminDetailItem,
+  AdminEmptyState,
+  AdminFilterChips,
+  AdminHeroCard,
+  AdminSectionHeader,
+  AdminStatusBadge,
+} from '../components';
 import { AppButton } from '../../../shared/ui/atoms/AppButton';
 import { AppIcon, AppIconName } from '../../../shared/ui/atoms/AppIcon';
 import { AppInput } from '../../../shared/ui/atoms/AppInput';
@@ -95,6 +103,9 @@ export function AdminServicesScreen() {
     });
   }, [search, selectedFilter]);
 
+  const activeCount = services.filter((service) => service.status === 'active').length;
+  const inactiveCount = services.filter((service) => service.status === 'inactive').length;
+
   return (
     <Screen
       title="Services"
@@ -108,36 +119,21 @@ export function AdminServicesScreen() {
       ]}
     >
       <View style={styles.root}>
-        <View style={styles.summaryCard}>
-          <View style={styles.summaryTop}>
-            <View style={styles.summaryIcon}>
-              <AppIcon
-                name="Sparkles"
-                size={34}
-                color={theme.colors.primaryDark}
-              />
-            </View>
-
-            <View style={styles.cardText}>
-              <AppText variant="h2">Clinic Services</AppText>
-
-              <AppText color={theme.colors.textMuted}>
-                Manage treatment names, categories, pricing, duration, assigned
-                doctors, and service status.
-              </AppText>
-            </View>
-          </View>
-
+        <AdminHeroCard
+          icon="Sparkles"
+          title="Clinic Services"
+          description="Manage treatment names, categories, pricing, duration, assigned doctors, and service status."
+        >
           <View style={styles.statsRow}>
-            <StatItem label="Total" value={`${services.length}`} />
+            <SummaryItem label="Total" value={`${services.length}`} />
             <View style={styles.statDivider} />
-            <StatItem label="Active" value="3" />
+            <SummaryItem label="Active" value={`${activeCount}`} />
             <View style={styles.statDivider} />
-            <StatItem label="Inactive" value="1" />
+            <SummaryItem label="Inactive" value={`${inactiveCount}`} />
           </View>
 
           <AppButton title="Add Service" />
-        </View>
+        </AdminHeroCard>
 
         <AppInput
           value={search}
@@ -148,44 +144,17 @@ export function AdminServicesScreen() {
           onRightIconPress={() => setSearch('')}
         />
 
-        <View style={styles.filterRow}>
-          {filters.map((filter) => {
-            const isSelected = selectedFilter === filter.value;
-
-            return (
-              <Pressable
-                key={filter.value}
-                onPress={() => setSelectedFilter(filter.value)}
-                style={({ pressed }) => [
-                  styles.filterChip,
-                  isSelected && styles.filterChipActive,
-                  pressed && styles.pressed,
-                ]}
-              >
-                <AppText
-                  variant="caption"
-                  color={
-                    isSelected
-                      ? theme.colors.primaryDark
-                      : theme.colors.textMuted
-                  }
-                  style={isSelected ? styles.selectedText : undefined}
-                >
-                  {filter.label}
-                </AppText>
-              </Pressable>
-            );
-          })}
-        </View>
+        <AdminFilterChips
+          options={filters}
+          selectedValue={selectedFilter}
+          onChange={setSelectedFilter}
+        />
 
         <View style={styles.section}>
-          <View>
-            <AppText variant="h3">Service List</AppText>
-
-            <AppText variant="caption" color={theme.colors.textMuted}>
-              {filteredServices.length} services found
-            </AppText>
-          </View>
+          <AdminSectionHeader
+            title="Service List"
+            subtitle={`${filteredServices.length} services found`}
+          />
 
           <View style={styles.list}>
             {filteredServices.map((service) => (
@@ -193,12 +162,19 @@ export function AdminServicesScreen() {
             ))}
           </View>
         </View>
+
+        {filteredServices.length === 0 ? (
+          <AdminEmptyState
+            title="No services found"
+            description="Try another keyword or change the service category filter."
+          />
+        ) : null}
       </View>
     </Screen>
   );
 }
 
-function StatItem({ label, value }: { label: string; value: string }) {
+function SummaryItem({ label, value }: { label: string; value: string }) {
   const theme = useAppTheme();
 
   return (
@@ -239,23 +215,10 @@ function ServiceCard({ service }: { service: AdminService }) {
               {service.name}
             </AppText>
 
-            <View
-              style={[
-                styles.statusBadge,
-                {
-                  backgroundColor: isActive
-                    ? theme.colors.success
-                    : theme.colors.error,
-                },
-              ]}
-            >
-              <AppText
-                variant="small"
-                color={isActive ? theme.colors.successText : theme.colors.errorText}
-              >
-                {isActive ? 'Active' : 'Inactive'}
-              </AppText>
-            </View>
+            <AdminStatusBadge
+              label={isActive ? 'Active' : 'Inactive'}
+              type={isActive ? 'success' : 'error'}
+            />
           </View>
 
           <AppText variant="caption" color={theme.colors.textMuted}>
@@ -265,9 +228,9 @@ function ServiceCard({ service }: { service: AdminService }) {
       </View>
 
       <View style={styles.detailsBox}>
-        <DetailItem icon="Clock" label="Duration" value={service.duration} />
-        <DetailItem icon="CreditCard" label="Price" value={service.price} />
-        <DetailItem
+        <AdminDetailItem icon="Clock" label="Duration" value={service.duration} />
+        <AdminDetailItem icon="CreditCard" label="Price" value={service.price} />
+        <AdminDetailItem
           icon="Stethoscope"
           label="Doctors"
           value={`${service.doctors} assigned`}
@@ -292,66 +255,10 @@ function ServiceCard({ service }: { service: AdminService }) {
   );
 }
 
-function DetailItem({
-  icon,
-  label,
-  value,
-}: {
-  icon: AppIconName;
-  label: string;
-  value: string;
-}) {
-  const theme = useAppTheme();
-  const styles = useMemo(() => createStyles(theme), [theme]);
-
-  return (
-    <View style={styles.detailItem}>
-      <AppIcon name={icon} size={17} color={theme.colors.primaryDark} />
-
-      <View>
-        <AppText variant="small" color={theme.colors.textMuted}>
-          {label}
-        </AppText>
-
-        <AppText variant="caption">{value}</AppText>
-      </View>
-    </View>
-  );
-}
-
 function createStyles(theme: ReturnType<typeof useAppTheme>) {
   return StyleSheet.create({
     root: {
       gap: theme.spacing.xl,
-    },
-
-    summaryCard: {
-      borderRadius: theme.radius['2xl'],
-      backgroundColor: theme.colors.card,
-      borderWidth: 1,
-      borderColor: theme.colors.border,
-      padding: theme.spacing.xl,
-      gap: theme.spacing.lg,
-      ...(theme.shadows.card ?? {}),
-    },
-
-    summaryTop: {
-      flexDirection: 'row',
-      gap: theme.spacing.md,
-    },
-
-    summaryIcon: {
-      width: 70,
-      height: 70,
-      borderRadius: theme.radius['2xl'],
-      backgroundColor: theme.colors.cardMuted,
-      alignItems: 'center',
-      justifyContent: 'center',
-    },
-
-    cardText: {
-      flex: 1,
-      gap: theme.spacing.xs,
     },
 
     statsRow: {
@@ -368,32 +275,6 @@ function createStyles(theme: ReturnType<typeof useAppTheme>) {
       width: 1,
       height: '65%',
       backgroundColor: theme.colors.border,
-    },
-
-    filterRow: {
-      flexDirection: 'row',
-      flexWrap: 'wrap',
-      gap: theme.spacing.sm,
-    },
-
-    filterChip: {
-      minHeight: 40,
-      paddingHorizontal: theme.spacing.md,
-      borderRadius: theme.radius.full,
-      borderWidth: 1,
-      borderColor: theme.colors.border,
-      backgroundColor: theme.colors.card,
-      alignItems: 'center',
-      justifyContent: 'center',
-    },
-
-    filterChipActive: {
-      borderColor: theme.colors.primaryDark,
-      backgroundColor: theme.colors.cardMuted,
-    },
-
-    selectedText: {
-      fontWeight: '700',
     },
 
     section: {
@@ -429,6 +310,11 @@ function createStyles(theme: ReturnType<typeof useAppTheme>) {
       justifyContent: 'center',
     },
 
+    cardText: {
+      flex: 1,
+      gap: theme.spacing.xs,
+    },
+
     titleRow: {
       flexDirection: 'row',
       alignItems: 'flex-start',
@@ -439,12 +325,6 @@ function createStyles(theme: ReturnType<typeof useAppTheme>) {
       flex: 1,
     },
 
-    statusBadge: {
-      paddingHorizontal: theme.spacing.sm,
-      paddingVertical: theme.spacing.xs,
-      borderRadius: theme.radius.full,
-    },
-
     detailsBox: {
       borderRadius: theme.radius.lg,
       backgroundColor: theme.colors.background,
@@ -452,12 +332,6 @@ function createStyles(theme: ReturnType<typeof useAppTheme>) {
       borderColor: theme.colors.border,
       padding: theme.spacing.md,
       gap: theme.spacing.md,
-    },
-
-    detailItem: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      gap: theme.spacing.sm,
     },
 
     actionRow: {
