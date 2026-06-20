@@ -19,6 +19,8 @@ import { AdminServicesScreen } from '../../modules/admin/screens/AdminServicesSc
 import { AdminReportsScreen } from '../../modules/admin/screens/AdminReportsScreen';
 import { AdminPaymentsScreen } from '../../modules/admin/screens/AdminPaymentsScreen';
 import { AdminPromotionsScreen } from '../../modules/admin/screens/AdminPromotionsScreen';
+import { AdminNotificationsScreen } from '../../modules/admin/screens/AdminNotificationsScreen';
+import { AdminBranchesScreen } from '../../modules/admin/screens/AdminBranchesScreen';
 
 const Stack = createNativeStackNavigator<AdminStackParamList>();
 const Tab = createBottomTabNavigator<AdminTabParamList>();
@@ -94,6 +96,8 @@ export function AdminNavigator() {
       <Stack.Screen name="AdminReports" component={AdminReportsScreen} />
       <Stack.Screen name="AdminPayments" component={AdminPaymentsScreen} />
       <Stack.Screen name="AdminPromotions" component={AdminPromotionsScreen} />
+      <Stack.Screen name="AdminBranches" component={AdminBranchesScreen} />
+      <Stack.Screen name="AdminNotifications" component={AdminNotificationsScreen} />
     </Stack.Navigator>
   );
 }
