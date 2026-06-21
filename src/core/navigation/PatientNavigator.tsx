@@ -4,7 +4,7 @@ import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { PatientTabParamList } from './navigation.types';
+import { PatientStackParamList, PatientTabParamList } from './navigation.types';
 import { useAppTheme } from '../../app/providers/ThemeProvider';
 import { AppIcon, AppIconName } from '../../shared/ui/atoms/AppIcon';
 
@@ -13,8 +13,16 @@ import { PatientServicesScreen } from '../../modules/patient/screens/PatientServ
 import { PatientAppointmentsScreen } from '../../modules/patient/screens/PatientAppointmentsScreen';
 import { PatientProgressScreen } from '../../modules/patient/screens/PatientProgressScreen';
 import { PatientProfileScreen } from '../../modules/patient/screens/PatientProfileScreen';
+import { ServiceDetailsScreen } from '../../modules/patient/screens/ServiceDetailsScreen';
+import { DoctorProfileScreen } from '../../modules/patient/screens/DoctorProfileScreen';
+import { BookingBranchScreen } from '../../modules/patient/screens/BookingBranchScreen';
+import { BookingDateTimeScreen } from '../../modules/patient/screens/BookingDateTimeScreen';
+import { BookingPaymentScreen } from '../../modules/patient/screens/BookingPaymentScreen';
+import { AppointmentConfirmationScreen } from '../../modules/patient/screens/AppointmentConfirmationScreen';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
 const Tab = createBottomTabNavigator<PatientTabParamList>();
+const Stack = createNativeStackNavigator<PatientStackParamList>();
 
 const icons: Record<keyof PatientTabParamList, AppIconName> = {
   PatientHome: 'House',
@@ -24,7 +32,7 @@ const icons: Record<keyof PatientTabParamList, AppIconName> = {
   PatientProfile: 'UserRound',
 };
 
-export function PatientNavigator() {
+export function PatientTabs() {
   const theme = useAppTheme();
   const insets = useSafeAreaInsets();
 
@@ -76,5 +84,20 @@ export function PatientNavigator() {
         options={{ title: 'Profile' }}
       />
     </Tab.Navigator>
+  );
+}
+
+
+export const PatientNavigator =()=>{
+  return (
+    <Stack.Navigator screenOptions={{ headerShown: false }}>
+      <Stack.Screen name="PatientTabs" component={PatientTabs} />
+      <Stack.Screen name="ServiceDetails" component={ServiceDetailsScreen} />
+      <Stack.Screen name="DoctorProfile" component={DoctorProfileScreen} />
+      <Stack.Screen name="BookingBranch" component={BookingBranchScreen} />
+      <Stack.Screen name="BookingDateTime" component={BookingDateTimeScreen} />
+      <Stack.Screen name="BookingPayment" component={BookingPaymentScreen} />
+      <Stack.Screen name="AppointmentConfirmation" component={AppointmentConfirmationScreen} />
+    </Stack.Navigator>
   );
 }

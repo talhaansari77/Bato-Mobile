@@ -20,7 +20,7 @@ export function RootNavigator() {
   }
 
   return (
-    <Stack.Navigator initialRouteName="AdminApp" screenOptions={{ headerShown: false }}>
+    <Stack.Navigator initialRouteName="PatientApp" screenOptions={{ headerShown: false }}>
       {/* {status === "authenticated" && user?.role === "Patient" ? (
       ) : status === "authenticated" && user?.role === "Doctor" ? (
       ) : status === "authenticated" && user?.role === "Admin" ? (

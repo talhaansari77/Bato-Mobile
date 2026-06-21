@@ -56,3 +56,13 @@ export type AdminStackParamList = {
   AdminNotifications: undefined;
   AdminAuditLogs: undefined;
 };
+
+export type PatientStackParamList = {
+  PatientTabs: undefined;
+  ServiceDetails: undefined;
+  DoctorProfile: undefined;
+  BookingBranch: undefined;
+  BookingDateTime: undefined;
+  BookingPayment: undefined;
+  AppointmentConfirmation: undefined;
+};

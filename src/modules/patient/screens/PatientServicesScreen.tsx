@@ -1,20 +1,19 @@
 import React, { useMemo, useState } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
-import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
+// import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useNavigation } from '@react-navigation/native';
 
 import { useAppTheme } from '../../../app/providers/ThemeProvider';
-import { PatientTabParamList } from '../../../core/navigation/navigation.types';
+// import { PatientTabParamList } from '../../../core/navigation/navigation.types';
+import { PatientStackParamList } from '../../../core/navigation/navigation.types';
 import { AppButton } from '../../../shared/ui/atoms/AppButton';
 import { AppIcon, AppIconName } from '../../../shared/ui/atoms/AppIcon';
 import { AppInput } from '../../../shared/ui/atoms/AppInput';
 import { AppText } from '../../../shared/ui/atoms/AppText';
 import { Screen } from '../../../shared/ui/templates/Screen';
 
-type PatientServicesNavigation = BottomTabNavigationProp<
-  PatientTabParamList,
-  'PatientServices'
->;
+type PatientServicesNavigation = NativeStackNavigationProp<PatientStackParamList>;
 
 type ServiceCategoryId = 'all' | 'hair' | 'skin' | 'face';
 
@@ -296,7 +295,7 @@ export function PatientServicesScreen() {
             <ServiceCard
               key={service.id}
               service={service}
-              onBookPress={() => navigation.navigate('PatientAppointments')}
+              onBookPress={() => navigation.navigate('ServiceDetails')}
             />
           ))}
         </View>
@@ -400,7 +399,7 @@ function ServiceCard({ service, onBookPress }: ServiceCardProps) {
           onPress={onBookPress}
         />
 
-        <Pressable style={styles.detailsButton}>
+        <Pressable style={styles.detailsButton} onPress={onBookPress}>
           <AppText variant="caption" color={theme.colors.primaryDark}>
             Details
           </AppText>
