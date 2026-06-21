@@ -1,18 +1,19 @@
-import React, { useMemo, useState } from 'react';
-import { Pressable, StyleSheet, View } from 'react-native';
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { useNavigation } from '@react-navigation/native';
+import React, { useMemo, useState } from "react";
+import { Pressable, StyleSheet, View } from "react-native";
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import { useNavigation } from "@react-navigation/native";
 
-import { useAppTheme } from '../../../app/providers/ThemeProvider';
-import { PatientStackParamList } from '../../../core/navigation/navigation.types';
-import { AppButton } from '../../../shared/ui/atoms/AppButton';
-import { AppIcon } from '../../../shared/ui/atoms/AppIcon';
-import { AppText } from '../../../shared/ui/atoms/AppText';
-import { Screen } from '../../../shared/ui/templates/Screen';
+import { useAppTheme } from "../../../app/providers/ThemeProvider";
+import { PatientStackParamList } from "../../../core/navigation/navigation.types";
+import { AppButton } from "../../../shared/ui/atoms/AppButton";
+import { AppIcon } from "../../../shared/ui/atoms/AppIcon";
+import { AppText } from "../../../shared/ui/atoms/AppText";
+import { Screen } from "../../../shared/ui/templates/Screen";
+import { BookingStepIndicator } from "../components";
 
 type NavigationProp = NativeStackNavigationProp<
   PatientStackParamList,
-  'BookingBranch'
+  "BookingBranch"
 >;
 
 type Branch = {
@@ -25,25 +26,25 @@ type Branch = {
 
 const branches: Branch[] = [
   {
-    id: 'main',
-    name: 'Main Branch',
-    address: 'Salmiya, Kuwait',
-    distance: '3.2 km away',
-    availability: 'Available today',
+    id: "main",
+    name: "Main Branch",
+    address: "Salmiya, Kuwait",
+    distance: "3.2 km away",
+    availability: "Available today",
   },
   {
-    id: 'avenues',
-    name: 'Avenues Branch',
-    address: 'Avenues Mall, Kuwait',
-    distance: '8.5 km away',
-    availability: 'Available tomorrow',
+    id: "avenues",
+    name: "Avenues Branch",
+    address: "Avenues Mall, Kuwait",
+    distance: "8.5 km away",
+    availability: "Available tomorrow",
   },
   {
-    id: 'farwaniya',
-    name: 'Farwaniya Branch',
-    address: 'Farwaniya, Kuwait',
-    distance: '11.4 km away',
-    availability: 'Next available Jun 24',
+    id: "farwaniya",
+    name: "Farwaniya Branch",
+    address: "Farwaniya, Kuwait",
+    distance: "11.4 km away",
+    availability: "Next available Jun 24",
   },
 ];
 
@@ -59,7 +60,11 @@ export function BookingBranchScreen() {
       <View style={styles.root}>
         <View style={styles.heroCard}>
           <View style={styles.heroIcon}>
-            <AppIcon name="MapPinned" size={34} color={theme.colors.primaryDark} />
+            <AppIcon
+              name="MapPinned"
+              size={34}
+              color={theme.colors.primaryDark}
+            />
           </View>
 
           <View style={styles.heroText}>
@@ -72,15 +77,7 @@ export function BookingBranchScreen() {
           </View>
         </View>
 
-        <View style={styles.stepCard}>
-          <StepItem label="Branch" active />
-          <StepDivider />
-          <StepItem label="Time" />
-          <StepDivider />
-          <StepItem label="Payment" />
-          <StepDivider />
-          <StepItem label="Done" />
-        </View>
+        <BookingStepIndicator currentStep="branch" />
 
         <View style={styles.section}>
           <AppText variant="h3">Available Branches</AppText>
@@ -154,57 +151,10 @@ export function BookingBranchScreen() {
 
         <AppButton
           title="Continue to Date & Time"
-          onPress={() => navigation.navigate('BookingDateTime')}
+          onPress={() => navigation.navigate("BookingDateTime")}
         />
       </View>
     </Screen>
-  );
-}
-
-function StepItem({ label, active = false }: { label: string; active?: boolean }) {
-  const theme = useAppTheme();
-
-  return (
-    <View style={{ alignItems: 'center', gap: theme.spacing.xs }}>
-      <View
-        style={{
-          width: 28,
-          height: 28,
-          borderRadius: theme.radius.full,
-          backgroundColor: active ? theme.colors.primaryDark : theme.colors.cardMuted,
-          alignItems: 'center',
-          justifyContent: 'center',
-        }}
-      >
-        <AppIcon
-          name={active ? 'CircleCheck' : 'Circle'}
-          size={15}
-          color={active ? theme.colors.card : theme.colors.textMuted}
-        />
-      </View>
-
-      <AppText
-        variant="small"
-        color={active ? theme.colors.primaryDark : theme.colors.textMuted}
-      >
-        {label}
-      </AppText>
-    </View>
-  );
-}
-
-function StepDivider() {
-  const theme = useAppTheme();
-
-  return (
-    <View
-      style={{
-        flex: 1,
-        height: 1,
-        backgroundColor: theme.colors.border,
-        marginTop: 14,
-      }}
-    />
   );
 }
 
@@ -215,12 +165,12 @@ function createStyles(theme: ReturnType<typeof useAppTheme>) {
     },
 
     heroCard: {
-      borderRadius: theme.radius['2xl'],
+      borderRadius: theme.radius["2xl"],
       backgroundColor: theme.colors.card,
       borderWidth: 1,
       borderColor: theme.colors.border,
       padding: theme.spacing.xl,
-      flexDirection: 'row',
+      flexDirection: "row",
       gap: theme.spacing.md,
       ...(theme.shadows.card ?? {}),
     },
@@ -228,26 +178,15 @@ function createStyles(theme: ReturnType<typeof useAppTheme>) {
     heroIcon: {
       width: 70,
       height: 70,
-      borderRadius: theme.radius['2xl'],
+      borderRadius: theme.radius["2xl"],
       backgroundColor: theme.colors.cardMuted,
-      alignItems: 'center',
-      justifyContent: 'center',
+      alignItems: "center",
+      justifyContent: "center",
     },
 
     heroText: {
       flex: 1,
       gap: theme.spacing.xs,
-    },
-
-    stepCard: {
-      borderRadius: theme.radius.xl,
-      backgroundColor: theme.colors.card,
-      borderWidth: 1,
-      borderColor: theme.colors.border,
-      padding: theme.spacing.md,
-      flexDirection: 'row',
-      alignItems: 'flex-start',
-      ...(theme.shadows.card ?? {}),
     },
 
     section: {
@@ -274,8 +213,8 @@ function createStyles(theme: ReturnType<typeof useAppTheme>) {
     },
 
     branchTop: {
-      flexDirection: 'row',
-      alignItems: 'center',
+      flexDirection: "row",
+      alignItems: "center",
       gap: theme.spacing.md,
     },
 
@@ -284,8 +223,8 @@ function createStyles(theme: ReturnType<typeof useAppTheme>) {
       height: 52,
       borderRadius: theme.radius.lg,
       backgroundColor: theme.colors.cardMuted,
-      alignItems: 'center',
-      justifyContent: 'center',
+      alignItems: "center",
+      justifyContent: "center",
     },
 
     branchText: {
@@ -307,8 +246,8 @@ function createStyles(theme: ReturnType<typeof useAppTheme>) {
       borderRadius: theme.radius.full,
       borderWidth: 1,
       borderColor: theme.colors.primaryDark,
-      alignItems: 'center',
-      justifyContent: 'center',
+      alignItems: "center",
+      justifyContent: "center",
     },
 
     radioDot: {
@@ -328,8 +267,8 @@ function createStyles(theme: ReturnType<typeof useAppTheme>) {
     },
 
     metaItem: {
-      flexDirection: 'row',
-      alignItems: 'center',
+      flexDirection: "row",
+      alignItems: "center",
       gap: theme.spacing.xs,
     },
 

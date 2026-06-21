@@ -1,21 +1,22 @@
-import React, { useMemo, useState } from 'react';
-import { Pressable, StyleSheet, View } from 'react-native';
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { useNavigation } from '@react-navigation/native';
+import React, { useMemo, useState } from "react";
+import { Pressable, StyleSheet, View } from "react-native";
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import { useNavigation } from "@react-navigation/native";
 
-import { useAppTheme } from '../../../app/providers/ThemeProvider';
-import { PatientStackParamList } from '../../../core/navigation/navigation.types';
-import { AppButton } from '../../../shared/ui/atoms/AppButton';
-import { AppIcon } from '../../../shared/ui/atoms/AppIcon';
-import { AppText } from '../../../shared/ui/atoms/AppText';
-import { Screen } from '../../../shared/ui/templates/Screen';
+import { useAppTheme } from "../../../app/providers/ThemeProvider";
+import { PatientStackParamList } from "../../../core/navigation/navigation.types";
+import { AppButton } from "../../../shared/ui/atoms/AppButton";
+import { AppIcon } from "../../../shared/ui/atoms/AppIcon";
+import { AppText } from "../../../shared/ui/atoms/AppText";
+import { Screen } from "../../../shared/ui/templates/Screen";
+import { BookingStepIndicator } from "../components";
 
 type NavigationProp = NativeStackNavigationProp<
   PatientStackParamList,
-  'BookingPayment'
+  "BookingPayment"
 >;
 
-type PaymentOption = 'online' | 'clinic';
+type PaymentOption = "online" | "clinic";
 
 export function BookingPaymentScreen() {
   const theme = useAppTheme();
@@ -23,7 +24,7 @@ export function BookingPaymentScreen() {
   const styles = useMemo(() => createStyles(theme), [theme]);
 
   const [selectedPayment, setSelectedPayment] =
-    useState<PaymentOption>('clinic');
+    useState<PaymentOption>("clinic");
 
   return (
     <Screen title="Payment" subtitle="Booking step 3 of 4" showBack>
@@ -47,15 +48,7 @@ export function BookingPaymentScreen() {
           </View>
         </View>
 
-        <View style={styles.stepCard}>
-          <StepItem label="Branch" done />
-          <StepDivider />
-          <StepItem label="Time" done />
-          <StepDivider />
-          <StepItem label="Payment" active />
-          <StepDivider />
-          <StepItem label="Done" />
-        </View>
+        <BookingStepIndicator currentStep="payment" />
 
         <View style={styles.section}>
           <AppText variant="h3">Payment Options</AppText>
@@ -64,16 +57,16 @@ export function BookingPaymentScreen() {
             title="Pay Online"
             subtitle="Pay securely now using card, Apple Pay, or Google Pay later."
             icon="CreditCard"
-            selected={selectedPayment === 'online'}
-            onPress={() => setSelectedPayment('online')}
+            selected={selectedPayment === "online"}
+            onPress={() => setSelectedPayment("online")}
           />
 
           <PaymentCard
             title="Pay at Clinic"
             subtitle="Book now and pay when you arrive. Admin approval required."
             icon="Building2"
-            selected={selectedPayment === 'clinic'}
-            onPress={() => setSelectedPayment('clinic')}
+            selected={selectedPayment === "clinic"}
+            onPress={() => setSelectedPayment("clinic")}
           />
         </View>
 
@@ -94,13 +87,9 @@ export function BookingPaymentScreen() {
           </View>
         </View>
 
-        {selectedPayment === 'clinic' ? (
+        {selectedPayment === "clinic" ? (
           <View style={styles.noticeCard}>
-            <AppIcon
-              name="Info"
-              size={22}
-              color={theme.colors.warningText}
-            />
+            <AppIcon name="Info" size={22} color={theme.colors.warningText} />
 
             <View style={styles.noticeText}>
               <AppText variant="bodyMedium">Approval required</AppText>
@@ -115,11 +104,11 @@ export function BookingPaymentScreen() {
 
         <AppButton
           title={
-            selectedPayment === 'online'
-              ? 'Continue to Online Payment'
-              : 'Request Appointment'
+            selectedPayment === "online"
+              ? "Continue to Online Payment"
+              : "Request Appointment"
           }
-          onPress={() => navigation.navigate('AppointmentConfirmation')}
+          onPress={() => navigation.navigate("AppointmentConfirmation")}
         />
       </View>
     </Screen>
@@ -176,8 +165,8 @@ function SummaryRow({ label, value }: { label: string; value: string }) {
   return (
     <View
       style={{
-        flexDirection: 'row',
-        justifyContent: 'space-between',
+        flexDirection: "row",
+        justifyContent: "space-between",
         gap: theme.spacing.md,
       }}
     >
@@ -190,65 +179,6 @@ function SummaryRow({ label, value }: { label: string; value: string }) {
   );
 }
 
-function StepItem({
-  label,
-  active = false,
-  done = false,
-}: {
-  label: string;
-  active?: boolean;
-  done?: boolean;
-}) {
-  const theme = useAppTheme();
-
-  const highlighted = active || done;
-
-  return (
-    <View style={{ alignItems: 'center', gap: theme.spacing.xs }}>
-      <View
-        style={{
-          width: 28,
-          height: 28,
-          borderRadius: theme.radius.full,
-          backgroundColor: highlighted
-            ? theme.colors.primaryDark
-            : theme.colors.cardMuted,
-          alignItems: 'center',
-          justifyContent: 'center',
-        }}
-      >
-        <AppIcon
-          name={done ? 'CircleCheck' : active ? 'CreditCard' : 'Circle'}
-          size={15}
-          color={highlighted ? theme.colors.card : theme.colors.textMuted}
-        />
-      </View>
-
-      <AppText
-        variant="small"
-        color={highlighted ? theme.colors.primaryDark : theme.colors.textMuted}
-      >
-        {label}
-      </AppText>
-    </View>
-  );
-}
-
-function StepDivider() {
-  const theme = useAppTheme();
-
-  return (
-    <View
-      style={{
-        flex: 1,
-        height: 1,
-        backgroundColor: theme.colors.border,
-        marginTop: 14,
-      }}
-    />
-  );
-}
-
 function createStyles(theme: ReturnType<typeof useAppTheme>) {
   return StyleSheet.create({
     root: {
@@ -256,12 +186,12 @@ function createStyles(theme: ReturnType<typeof useAppTheme>) {
     },
 
     heroCard: {
-      borderRadius: theme.radius['2xl'],
+      borderRadius: theme.radius["2xl"],
       backgroundColor: theme.colors.card,
       borderWidth: 1,
       borderColor: theme.colors.border,
       padding: theme.spacing.xl,
-      flexDirection: 'row',
+      flexDirection: "row",
       gap: theme.spacing.md,
       ...(theme.shadows.card ?? {}),
     },
@@ -269,26 +199,15 @@ function createStyles(theme: ReturnType<typeof useAppTheme>) {
     heroIcon: {
       width: 70,
       height: 70,
-      borderRadius: theme.radius['2xl'],
+      borderRadius: theme.radius["2xl"],
       backgroundColor: theme.colors.cardMuted,
-      alignItems: 'center',
-      justifyContent: 'center',
+      alignItems: "center",
+      justifyContent: "center",
     },
 
     heroText: {
       flex: 1,
       gap: theme.spacing.xs,
-    },
-
-    stepCard: {
-      borderRadius: theme.radius.xl,
-      backgroundColor: theme.colors.card,
-      borderWidth: 1,
-      borderColor: theme.colors.border,
-      padding: theme.spacing.md,
-      flexDirection: 'row',
-      alignItems: 'flex-start',
-      ...(theme.shadows.card ?? {}),
     },
 
     section: {
@@ -301,8 +220,8 @@ function createStyles(theme: ReturnType<typeof useAppTheme>) {
       borderWidth: 1,
       borderColor: theme.colors.border,
       padding: theme.spacing.lg,
-      flexDirection: 'row',
-      alignItems: 'center',
+      flexDirection: "row",
+      alignItems: "center",
       gap: theme.spacing.md,
       ...(theme.shadows.card ?? {}),
     },
@@ -317,8 +236,8 @@ function createStyles(theme: ReturnType<typeof useAppTheme>) {
       height: 52,
       borderRadius: theme.radius.lg,
       backgroundColor: theme.colors.cardMuted,
-      alignItems: 'center',
-      justifyContent: 'center',
+      alignItems: "center",
+      justifyContent: "center",
     },
 
     paymentText: {
@@ -340,8 +259,8 @@ function createStyles(theme: ReturnType<typeof useAppTheme>) {
       borderRadius: theme.radius.full,
       borderWidth: 1,
       borderColor: theme.colors.primaryDark,
-      alignItems: 'center',
-      justifyContent: 'center',
+      alignItems: "center",
+      justifyContent: "center",
     },
 
     radioDot: {
@@ -365,9 +284,9 @@ function createStyles(theme: ReturnType<typeof useAppTheme>) {
       borderTopWidth: StyleSheet.hairlineWidth,
       borderTopColor: theme.colors.border,
       paddingTop: theme.spacing.md,
-      flexDirection: 'row',
-      alignItems: 'center',
-      justifyContent: 'space-between',
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "space-between",
     },
 
     noticeCard: {
@@ -376,7 +295,7 @@ function createStyles(theme: ReturnType<typeof useAppTheme>) {
       borderWidth: 1,
       borderColor: theme.colors.border,
       padding: theme.spacing.lg,
-      flexDirection: 'row',
+      flexDirection: "row",
       gap: theme.spacing.md,
     },
 

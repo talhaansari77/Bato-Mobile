@@ -1,35 +1,36 @@
-import React, { useMemo, useState } from 'react';
-import { Pressable, StyleSheet, View } from 'react-native';
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { useNavigation } from '@react-navigation/native';
+import React, { useMemo, useState } from "react";
+import { Pressable, StyleSheet, View } from "react-native";
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import { useNavigation } from "@react-navigation/native";
 
-import { useAppTheme } from '../../../app/providers/ThemeProvider';
-import { PatientStackParamList } from '../../../core/navigation/navigation.types';
-import { AppButton } from '../../../shared/ui/atoms/AppButton';
-import { AppIcon } from '../../../shared/ui/atoms/AppIcon';
-import { AppText } from '../../../shared/ui/atoms/AppText';
-import { Screen } from '../../../shared/ui/templates/Screen';
+import { useAppTheme } from "../../../app/providers/ThemeProvider";
+import { PatientStackParamList } from "../../../core/navigation/navigation.types";
+import { AppButton } from "../../../shared/ui/atoms/AppButton";
+import { AppIcon } from "../../../shared/ui/atoms/AppIcon";
+import { AppText } from "../../../shared/ui/atoms/AppText";
+import { Screen } from "../../../shared/ui/templates/Screen";
+import { BookingStepIndicator } from "../components";
 
 type NavigationProp = NativeStackNavigationProp<
   PatientStackParamList,
-  'BookingDateTime'
+  "BookingDateTime"
 >;
 
 const dates = [
-  { id: 'today', day: 'Today', date: '21', month: 'Jun' },
-  { id: 'tomorrow', day: 'Tomorrow', date: '22', month: 'Jun' },
-  { id: 'jun23', day: 'Tue', date: '23', month: 'Jun' },
-  { id: 'jun24', day: 'Wed', date: '24', month: 'Jun' },
+  { id: "today", day: "Today", date: "21", month: "Jun" },
+  { id: "tomorrow", day: "Tomorrow", date: "22", month: "Jun" },
+  { id: "jun23", day: "Tue", date: "23", month: "Jun" },
+  { id: "jun24", day: "Wed", date: "24", month: "Jun" },
 ];
 
 const timeSlots = [
-  '10:00 AM',
-  '11:30 AM',
-  '02:00 PM',
-  '03:30 PM',
-  '05:00 PM',
-  '06:30 PM',
-  '07:30 PM',
+  "10:00 AM",
+  "11:30 AM",
+  "02:00 PM",
+  "03:30 PM",
+  "05:00 PM",
+  "06:30 PM",
+  "07:30 PM",
 ];
 
 export function BookingDateTimeScreen() {
@@ -38,7 +39,7 @@ export function BookingDateTimeScreen() {
   const styles = useMemo(() => createStyles(theme), [theme]);
 
   const [selectedDate, setSelectedDate] = useState(dates[1].id);
-  const [selectedTime, setSelectedTime] = useState('06:30 PM');
+  const [selectedTime, setSelectedTime] = useState("06:30 PM");
 
   return (
     <Screen title="Date & Time" subtitle="Booking step 2 of 4" showBack>
@@ -61,15 +62,7 @@ export function BookingDateTimeScreen() {
           </View>
         </View>
 
-        <View style={styles.stepCard}>
-          <StepItem label="Branch" done />
-          <StepDivider />
-          <StepItem label="Time" active />
-          <StepDivider />
-          <StepItem label="Payment" />
-          <StepDivider />
-          <StepItem label="Done" />
-        </View>
+        <BookingStepIndicator currentStep="time" />
 
         <View style={styles.section}>
           <AppText variant="h3">Select Date</AppText>
@@ -185,69 +178,10 @@ export function BookingDateTimeScreen() {
 
         <AppButton
           title="Continue to Payment"
-          onPress={() => navigation.navigate('BookingPayment')}
+          onPress={() => navigation.navigate("BookingPayment")}
         />
       </View>
     </Screen>
-  );
-}
-
-function StepItem({
-  label,
-  active = false,
-  done = false,
-}: {
-  label: string;
-  active?: boolean;
-  done?: boolean;
-}) {
-  const theme = useAppTheme();
-
-  const isHighlighted = active || done;
-
-  return (
-    <View style={{ alignItems: 'center', gap: theme.spacing.xs }}>
-      <View
-        style={{
-          width: 28,
-          height: 28,
-          borderRadius: theme.radius.full,
-          backgroundColor: isHighlighted
-            ? theme.colors.primaryDark
-            : theme.colors.cardMuted,
-          alignItems: 'center',
-          justifyContent: 'center',
-        }}
-      >
-        <AppIcon
-          name={done ? 'CircleCheck' : active ? 'Clock' : 'Circle'}
-          size={15}
-          color={isHighlighted ? theme.colors.card : theme.colors.textMuted}
-        />
-      </View>
-
-      <AppText
-        variant="small"
-        color={isHighlighted ? theme.colors.primaryDark : theme.colors.textMuted}
-      >
-        {label}
-      </AppText>
-    </View>
-  );
-}
-
-function StepDivider() {
-  const theme = useAppTheme();
-
-  return (
-    <View
-      style={{
-        flex: 1,
-        height: 1,
-        backgroundColor: theme.colors.border,
-        marginTop: 14,
-      }}
-    />
   );
 }
 
@@ -258,12 +192,12 @@ function createStyles(theme: ReturnType<typeof useAppTheme>) {
     },
 
     heroCard: {
-      borderRadius: theme.radius['2xl'],
+      borderRadius: theme.radius["2xl"],
       backgroundColor: theme.colors.card,
       borderWidth: 1,
       borderColor: theme.colors.border,
       padding: theme.spacing.xl,
-      flexDirection: 'row',
+      flexDirection: "row",
       gap: theme.spacing.md,
       ...(theme.shadows.card ?? {}),
     },
@@ -271,10 +205,10 @@ function createStyles(theme: ReturnType<typeof useAppTheme>) {
     heroIcon: {
       width: 70,
       height: 70,
-      borderRadius: theme.radius['2xl'],
+      borderRadius: theme.radius["2xl"],
       backgroundColor: theme.colors.cardMuted,
-      alignItems: 'center',
-      justifyContent: 'center',
+      alignItems: "center",
+      justifyContent: "center",
     },
 
     heroText: {
@@ -282,23 +216,12 @@ function createStyles(theme: ReturnType<typeof useAppTheme>) {
       gap: theme.spacing.xs,
     },
 
-    stepCard: {
-      borderRadius: theme.radius.xl,
-      backgroundColor: theme.colors.card,
-      borderWidth: 1,
-      borderColor: theme.colors.border,
-      padding: theme.spacing.md,
-      flexDirection: 'row',
-      alignItems: 'flex-start',
-      ...(theme.shadows.card ?? {}),
-    },
-
     section: {
       gap: theme.spacing.md,
     },
 
     dateRow: {
-      flexDirection: 'row',
+      flexDirection: "row",
       gap: theme.spacing.sm,
     },
 
@@ -309,8 +232,8 @@ function createStyles(theme: ReturnType<typeof useAppTheme>) {
       backgroundColor: theme.colors.card,
       borderWidth: 1,
       borderColor: theme.colors.border,
-      alignItems: 'center',
-      justifyContent: 'center',
+      alignItems: "center",
+      justifyContent: "center",
       gap: theme.spacing.xs,
       ...(theme.shadows.card ?? {}),
     },
@@ -321,21 +244,21 @@ function createStyles(theme: ReturnType<typeof useAppTheme>) {
     },
 
     timeGrid: {
-      flexDirection: 'row',
-      flexWrap: 'wrap',
+      flexDirection: "row",
+      flexWrap: "wrap",
       gap: theme.spacing.sm,
     },
 
     timeChip: {
-      width: '48%',
+      width: "48%",
       minHeight: 46,
       borderRadius: theme.radius.full,
       borderWidth: 1,
       borderColor: theme.colors.border,
       backgroundColor: theme.colors.card,
-      flexDirection: 'row',
-      alignItems: 'center',
-      justifyContent: 'center',
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "center",
       gap: theme.spacing.xs,
     },
 
@@ -345,7 +268,7 @@ function createStyles(theme: ReturnType<typeof useAppTheme>) {
     },
 
     selectedText: {
-      fontWeight: '700',
+      fontWeight: "700",
     },
 
     summaryCard: {
@@ -354,8 +277,8 @@ function createStyles(theme: ReturnType<typeof useAppTheme>) {
       borderWidth: 1,
       borderColor: theme.colors.border,
       padding: theme.spacing.lg,
-      flexDirection: 'row',
-      alignItems: 'center',
+      flexDirection: "row",
+      alignItems: "center",
       gap: theme.spacing.md,
     },
 
@@ -364,8 +287,8 @@ function createStyles(theme: ReturnType<typeof useAppTheme>) {
       height: 50,
       borderRadius: theme.radius.lg,
       backgroundColor: theme.colors.card,
-      alignItems: 'center',
-      justifyContent: 'center',
+      alignItems: "center",
+      justifyContent: "center",
     },
 
     summaryText: {
